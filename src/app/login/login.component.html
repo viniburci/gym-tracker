@@ -15,7 +15,7 @@
         <p class="error-message">Please enter a valid password (at least 6 characters)</p>
       }
       <div class="button-container">
-        <button type="submit">Login</button>
+        <button type="submit" [disabled]="!form.valid">Login</button>
       </div>
     </form>
   </div>

@@ -21,7 +21,7 @@
         <p class="error-message">Passwords are not the same</p>
       }
       <div class="button-container">
-        <button type="submit">Sign Up</button>
+        <button type="submit" [disabled]="!form.valid">Sign Up</button>
       </div>
     </form>
   </div>
