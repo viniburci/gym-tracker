@@ -14,6 +14,7 @@ export class LoginComponent {
 
   private auth = inject(AuthService)
   isLoading = signal(false);
+  errorMessage = signal('');
 
   form = new FormGroup({
     email: new FormControl('', [Validators.email, Validators.required]),
@@ -41,10 +42,12 @@ export class LoginComponent {
     const password = this.form.controls.password.value
     console.log(email, password);
     this.isLoading.set(true);
-    this.auth.signup(email!, password!).subscribe({
-      next: response => {console.log(response); this.isLoading.set(false)},
-      error: err => {console.log(err); this.isLoading.set(false)},
-    });
+    if(email && password) {
+      this.auth.signup(email, password).subscribe({
+        next: response => {console.log(response); this.isLoading.set(false)},
+        error: err => {console.log(err); this.isLoading.set(false); this.errorMessage.set(err)},
+      });
+    }
   }
 
 }

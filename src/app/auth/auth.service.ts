@@ -10,6 +10,18 @@ export class AuthService {
 
   private http = inject(HttpClient);
 
+  register(firstname: string, lastname: string, email: string, password: string, role: string) {
+    return this.http.post(this.url + '/register',
+      {
+        'firstname': firstname,
+        'lastname': lastname,
+        'email': email,
+        'password': password,
+        'role': role
+      }
+    )
+  }
+
   signup(email: string, password: string) {
     return this.http.post<{"accessToken": string, "refreshToken": string}>(this.url + '/authenticate',
       {

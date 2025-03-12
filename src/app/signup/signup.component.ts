@@ -1,20 +1,45 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AuthService } from '../auth/auth.service';
+import { LoadingSpinner } from '../../public/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, LoadingSpinner],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.css'
 })
 export class SignupComponent {
 
+  private auth = inject(AuthService);
+  isLoading = signal(false);
+  errorMessage = signal('');
+
   form = new FormGroup({
+    firstname: new FormControl('', [Validators.required]),
+    lastname: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.email, Validators.required]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
-    confirmPassword: new FormControl('', [Validators.required, Validators.minLength(6)])
+    confirmPassword: new FormControl('', [Validators.required, Validators.minLength(6)]),
+    role: new FormControl('USER', [])
   })
+
+  get firstNameIsInvalid() {
+    return (
+      this.form.controls.firstname.touched &&
+      this.form.controls.firstname.dirty &&
+      this.form.controls.firstname.invalid
+    )
+  }
+
+  get lastNameIsInvalid() {
+    return (
+      this.form.controls.lastname.touched &&
+      this.form.controls.lastname.dirty &&
+      this.form.controls.lastname.invalid
+    )
+  }
 
   get emailIsInvalid() {
     return (
@@ -41,10 +66,21 @@ export class SignupComponent {
   }
 
   onSubmit() {
+    const firstname = this.form.controls.firstname.value;
+    const lastname = this.form.controls.lastname.value;
     const email = this.form.controls.email.value;
     const password = this.form.controls.password.value;
     const repeatPassword = this.form.controls.confirmPassword.value;
+    const role = this.form.controls.role.value;
     console.log(email, password, repeatPassword);
+
+    if(firstname && lastname && email && password && role) {
+      this.isLoading.set(true);
+      this.auth.register(firstname, lastname, email, password, role).subscribe({
+        next: (response) => {console.log(response); this.isLoading.set(false)},
+        error: err => {console.log(err); this.isLoading.set(false); this.errorMessage.set(err)}
+      })
+    }
   }
 
 }

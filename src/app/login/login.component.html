@@ -1,6 +1,9 @@
 <div class="login-container">
   <div class="login-box">
     <h1>Login</h1>
+    <div class="error-message" style="text-align: center">
+      {{errorMessage()}}
+    </div>
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="input-container">
         <input type="email" id="email" placeholder="Email" formControlName="email">

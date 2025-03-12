@@ -1,7 +1,22 @@
 <div class="login-container">
   <div class="login-box">
     <h1>Sign Up</h1>
+    <div class="error-message" style="text-align: center">
+      {{errorMessage()}}
+    </div>
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="input-container">
+        <input type="text" id="firstname" placeholder="First name" formControlName="firstname">
+      </div>
+      @if (firstNameIsInvalid) {
+        <p class="error-message">Please enter your first name</p>
+      }
+      <div class="input-container">
+        <input type="text" id="lastname" placeholder="Last name" formControlName="lastname">
+      </div>
+      @if (lastNameIsInvalid) {
+        <p class="error-message">Please enter your last name</p>
+      }
       <div class="input-container">
         <input type="email" id="email" placeholder="Email" formControlName="email">
       </div>
@@ -22,7 +37,9 @@
       }
       <div class="button-container">
         <button type="submit" [disabled]="!form.valid">Sign Up</button>
-        //if isLoading ... loadingspinner
+        @if (isLoading()) {
+          <app-loading-spinner/>
+        }
       </div>
     </form>
   </div>
