@@ -1,1 +1,28 @@
-<p>signup works!</p>
+<div class="login-container">
+  <div class="login-box">
+    <h1>Sign Up</h1>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="input-container">
+        <input type="email" id="email" placeholder="Email" formControlName="email">
+      </div>
+      @if (emailIsInvalid) {
+        <p class="error-message">Please enter a valid email</p>
+      }
+      <div class="input-container">
+        <input type="password" id="password" placeholder="Password" formControlName="password">
+      </div>
+      @if (passwordIsInvalid) {
+        <p class="error-message">Please enter a valid password (at least 6 characters)</p>
+      }
+      <div class="input-container">
+        <input type="password" id="confirmPassword" placeholder="Confirm password" formControlName="confirmPassword">
+      </div>
+      @if (repeatPasswordIsInvalid) {
+        <p class="error-message">Passwords are not the same</p>
+      }
+      <div class="button-container">
+        <button type="submit">Sign Up</button>
+      </div>
+    </form>
+  </div>
+</div>
