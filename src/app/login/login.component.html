@@ -16,7 +16,12 @@
       }
       <div class="button-container">
         <button type="submit" [disabled]="!form.valid">Login</button>
+        @if (isLoading()) {
+          <app-loading-spinner></app-loading-spinner>
+        }
       </div>
     </form>
   </div>
 </div>
+
+
