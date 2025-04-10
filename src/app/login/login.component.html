@@ -1,30 +1,42 @@
-<div class="login-container">
-  <div class="login-box">
-    <h1>Login</h1>
-    <div class="error-message" style="text-align: center">
+<div class="container" style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+  <section class="card" style="width: 100%; max-width: 400px; padding: 2rem;">
+    <h1 style="text-align: center;">Login</h1>
+
+    <div class="error-message" style="text-align: center; color: var(--del-color); margin-bottom: 1rem;">
       {{errorMessage()}}
     </div>
+
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="input-container">
-        <input type="email" id="email" placeholder="Email" formControlName="email">
-      </div>
-      @if (emailIsInvalid) {
-        <p class="error-message">Please enter a valid email</p>
-      }
-      <div class="input-container">
-        <input type="password" id="password" placeholder="Password" formControlName="password">
-      </div>
-      @if (passwordIsInvalid) {
-        <p class="error-message">Please enter a valid password (at least 6 characters)</p>
-      }
-      <div class="button-container">
-        <button type="submit" [disabled]="!form.valid">Login</button>
-        @if (isLoading()) {
-          <app-loading-spinner></app-loading-spinner>
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+
+        @if (emailIsInvalid) {
+          <p class="error-message" style="color: var(--del-color); margin: 0;">
+            Please enter a valid email
+          </p>
         }
+        <div class="input-container">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="Email" formControlName="email">
+        </div>
+
+        @if (passwordIsInvalid) {
+          <p class="error-message" style="color: var(--del-color); margin: 0;">
+            Please enter a valid password (at least 6 characters)
+          </p>
+        }
+        <div class="input-container">
+          <label for="senha">Senha</label>
+          <input type="password" id="password" placeholder="Password" formControlName="password">
+        </div>
+      </div>
+
+      <div class="button-container" style="display: flex; justify-content: center; margin-top: 1.5rem;">
+        <button [attr.aria-busy]="isLoading()" type="submit" [disabled]="!form.valid">Login</button>
       </div>
     </form>
-  </div>
+
+    <p style="text-align: center; margin-top: 1.5rem;">
+      Não tem uma conta? <a href="#" style="text-decoration: underline;">Cadastre-se aqui</a>
+    </p>
+  </section>
 </div>
-
-

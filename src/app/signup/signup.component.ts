@@ -1,12 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../auth/auth.service';
-import { LoadingSpinner } from '../../public/loading-spinner/loading-spinner.component';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [ReactiveFormsModule, LoadingSpinner],
+  imports: [ReactiveFormsModule],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.css'
 })
@@ -78,8 +78,43 @@ export class SignupComponent {
       this.isLoading.set(true);
       this.auth.register(firstname, lastname, email, password, role).subscribe({
         next: (response) => {console.log(response); this.isLoading.set(false)},
-        error: err => {console.log(err); this.isLoading.set(false); this.errorMessage.set(err)}
+        error: err => {console.log(err); this.isLoading.set(false); this.errorMessage.set(this.getErrorMessage(err))}
       })
+    }
+  }
+
+  private getErrorMessage(err: HttpErrorResponse): string {
+    switch (true) {
+      case err.error instanceof ErrorEvent:
+        // Erro de rede ou erro do lado do cliente
+        return `Network error: ${err.error.message}`;
+
+      case typeof err.error === 'string':
+        // Quando o backend retorna apenas uma string de erro
+        return err.error;
+
+      case !!err.error?.message:
+        // Quando o backend retorna um objeto com propriedade 'message'
+        return err.error.message;
+
+      case !!err.message:
+        // Mensagem padrão do HttpErrorResponse
+        return err.message;
+
+      case err.status === 0:
+        // Servidor não respondeu (CORS, offline, etc)
+        return 'Unable to connect to the server';
+
+      case err.status >= 400 && err.status < 500:
+        // Erros 4xx (client errors)
+        return 'Invalid credentials or request';
+
+      case err.status >= 500:
+        // Erros 5xx (server errors)
+        return 'Server error, please try again later';
+
+      default:
+        return 'An unknown error occurred';
     }
   }
 

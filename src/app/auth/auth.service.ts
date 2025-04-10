@@ -22,7 +22,7 @@ export class AuthService {
     )
   }
 
-  signup(email: string, password: string) {
+  login(email: string, password: string) {
     return this.http.post<{"accessToken": string, "refreshToken": string}>(this.url + '/authenticate',
       {
         "email": email,

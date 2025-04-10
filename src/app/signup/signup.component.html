@@ -1,46 +1,70 @@
-<div class="login-container">
-  <div class="login-box">
-    <h1>Sign Up</h1>
-    <div class="error-message" style="text-align: center">
+<div class="container" style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+  <section class="card" style="width: 100%; max-width: 400px; padding: 2rem;">
+    <h1 style="text-align: center;">Sign Up</h1>
+
+    <!-- Mensagem de erro geral -->
+    <div class="error-message" style="text-align: center; color: var(--del-color); margin-bottom: 1rem;">
       {{errorMessage()}}
     </div>
+
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="input-container">
-        <input type="text" id="firstname" placeholder="First name" formControlName="firstname">
-      </div>
-      @if (firstNameIsInvalid) {
-        <p class="error-message">Please enter your first name</p>
-      }
-      <div class="input-container">
-        <input type="text" id="lastname" placeholder="Last name" formControlName="lastname">
-      </div>
-      @if (lastNameIsInvalid) {
-        <p class="error-message">Please enter your last name</p>
-      }
-      <div class="input-container">
-        <input type="email" id="email" placeholder="Email" formControlName="email">
-      </div>
-      @if (emailIsInvalid) {
-        <p class="error-message">Please enter a valid email</p>
-      }
-      <div class="input-container">
-        <input type="password" id="password" placeholder="Password" formControlName="password">
-      </div>
-      @if (passwordIsInvalid) {
-        <p class="error-message">Please enter a valid password (at least 6 characters)</p>
-      }
-      <div class="input-container">
-        <input type="password" id="confirmPassword" placeholder="Confirm password" formControlName="confirmPassword">
-      </div>
-      @if (repeatPasswordIsInvalid) {
-        <p class="error-message">Passwords are not the same</p>
-      }
-      <div class="button-container">
-        <button type="submit" [disabled]="!form.valid">Sign Up</button>
-        @if (isLoading()) {
-          <app-loading-spinner/>
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+
+        @if (firstNameIsInvalid) {
+          <p class="error-message" style="color: var(--del-color); margin: 0;">
+            Please enter your first name
+          </p>
         }
+        <div class="input-container">
+          <label for="firstname">First name</label>
+          <input type="text" id="firstname" placeholder="First name" formControlName="firstname">
+        </div>
+
+        @if (lastNameIsInvalid) {
+          <p class="error-message" style="color: var(--del-color); margin: 0;">
+            Please enter your last name
+          </p>
+        }
+        <div class="input-container">
+          <label for="lastname">Last name</label>
+          <input type="text" id="lastname" placeholder="Last name" formControlName="lastname">
+        </div>
+
+        @if (emailIsInvalid) {
+          <p class="error-message" style="color: var(--del-color); margin: 0;">
+            Please enter a valid email
+          </p>
+        }
+        <div class="input-container">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="Email" formControlName="email">
+        </div>
+
+        @if (passwordIsInvalid) {
+          <p class="error-message" style="color: var(--del-color); margin: 0;">
+            Please enter a valid password (at least 6 characters)
+          </p>
+        }
+        <div class="input-container">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Password" formControlName="password">
+        </div>
+
+        @if (repeatPasswordIsInvalid) {
+          <p class="error-message" style="color: var(--del-color); margin: 0;">
+            Passwords are not the same
+          </p>
+        }
+        <div class="input-container">
+          <label for="confirmPassword">Confirm password</label>
+          <input type="password" id="confirmPassword" placeholder="Confirm password" formControlName="confirmPassword">
+        </div>
       </div>
+
+      <div class="button-container" style="display: flex; justify-content: center; margin-top: 1.5rem;">
+        <button [attr.aria-busy]="isLoading()" type="submit" [disabled]="!form.valid">Sign Up</button>
+      </div>
+
     </form>
-  </div>
+  </section>
 </div>
