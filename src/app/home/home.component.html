@@ -1,0 +1,61 @@
+<header class="container">
+  <nav>
+    <ul>
+      <li><strong>Gym Tracker</strong></li>
+    </ul>
+    <ul>
+      <li><a href="#workouts">Treinos</a></li>
+      <li><a href="#add-workout">Adicionar Treino</a></li>
+      <li><a href="#settings">Configurações</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="container">
+  <h1>Bem-vindo ao Gym Tracker!</h1>
+  <p>Administre seus treinos de academia de forma prática e eficiente.</p>
+
+  <section id="workouts">
+    <h2>Seus Treinos</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Nome do Treino</th>
+          <th>Exercícios</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Treino de Peito</td>
+          <td>Supino, Flexão, Cross-over</td>
+          <td>
+            <button class="secondary">Editar</button>
+            <button class="secondary">Excluir</button>
+          </td>
+        </tr>
+        <tr>
+          <td>Treino de Pernas</td>
+          <td>Agachamento, Leg Press, Stiff</td>
+          <td>
+            <button class="secondary">Editar</button>
+            <button class="secondary">Excluir</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="add-workout">
+    <h2>Adicionar Novo Treino</h2>
+    <form>
+      <label for="workout-name">Nome do Treino:</label>
+      <input type="text" id="workout-name" name="workout-name" placeholder="Ex.: Treino de costas" required>
+
+      <label for="exercises">Exercícios:</label>
+      <input type="text" id="exercises" name="exercises" placeholder="Ex.: Remada, Pull-Up" required>
+
+      <button type="submit">Adicionar Treino</button>
+    </form>
+  </section>
+</main>
