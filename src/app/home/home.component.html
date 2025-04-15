@@ -1,22 +1,3 @@
-<header class="container">
-  <nav>
-    <ul>
-      <li>
-        <a [routerLink]="['']">
-          <strong>Gym Tracker</strong>
-        </a>
-      </li>
-    </ul>
-    @if(isAuthenticated()) {
-      <ul>
-        <li><a [routerLink]="['treinos']">Treinos</a></li>
-        <li><a [routerLink]="['novo-treino']">Adicionar Treino</a></li>
-        <li><app-profile-dropdown></app-profile-dropdown></li>
-      </ul>
-    }
-  </nav>
-</header>
-
 <main class="container">
   <section class="hero">
     <h1>Bem-vindo ao Gym Tracker</h1>
@@ -40,5 +21,4 @@
       <li>Receba insights sobre sua performance</li>
     </ul>
   </section>
-
 </main>
