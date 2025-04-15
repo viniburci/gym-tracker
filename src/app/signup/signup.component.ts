@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../auth/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-signup',
@@ -13,6 +14,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class SignupComponent {
 
   private auth = inject(AuthService);
+  private router = inject(Router)
   isLoading = signal(false);
   errorMessage = this.auth.errorMessage;
 
@@ -77,7 +79,7 @@ export class SignupComponent {
     if(firstname && lastname && email && password && role) {
       this.isLoading.set(true);
       this.auth.register(firstname, lastname, email, password, role).subscribe({
-        next: (response) => {console.log(response); this.isLoading.set(false)},
+        next: (response) => {console.log(response); this.isLoading.set(false); this.router.navigate(["/home"])},
         error: () => this.isLoading.set(false)
       })
     }

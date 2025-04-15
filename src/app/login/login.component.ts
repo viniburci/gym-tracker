@@ -46,7 +46,7 @@ export class LoginComponent {
     this.isLoading.set(true);
     if(email && password) {
       this.auth.login(email, password).subscribe({
-        next: response => {console.log(response); this.isLoading.set(false); this.router.navigate(["/home"])},
+        next: response => {console.log(response); this.isLoading.set(false); this.router.navigate([""])},
         error: () => this.isLoading.set(false)
       });
     }

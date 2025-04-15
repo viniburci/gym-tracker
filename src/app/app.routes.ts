@@ -5,6 +5,10 @@ import { HomeComponent } from './home/home.component';
 
 export const routes: Routes = [
   {
+    path: '',
+    component: HomeComponent
+  },
+  {
     path: 'login',
     component: LoginComponent
   },
@@ -12,8 +16,4 @@ export const routes: Routes = [
     path: 'signup',
     component: SignupComponent
   },
-  {
-    path: 'home',
-    component: HomeComponent
-  }
 ];
