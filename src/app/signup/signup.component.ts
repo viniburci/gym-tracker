@@ -79,7 +79,7 @@ export class SignupComponent {
     if(firstname && lastname && email && password && role) {
       this.isLoading.set(true);
       this.auth.register(firstname, lastname, email, password, role).subscribe({
-        next: (response) => {console.log(response); this.isLoading.set(false); this.router.navigate(["/home"])},
+        next: (response) => {console.log(response); this.isLoading.set(false); this.router.navigate([""])},
         error: () => this.isLoading.set(false)
       })
     }

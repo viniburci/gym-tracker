@@ -1,4 +1,5 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-profile-dropdown',
@@ -9,9 +10,14 @@ import { Component, signal } from '@angular/core';
 })
 export class ProfileDropdownComponent {
   isDropdownVisible = signal(false);
+  private authService = inject(AuthService);
 
   toggleDropdown() {
     this.isDropdownVisible.set(!this.isDropdownVisible());
+  }
+
+  logout() {
+    this.authService.logout();
   }
 
 }

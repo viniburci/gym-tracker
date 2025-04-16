@@ -21,11 +21,9 @@ export class AppComponent {
   }
 
   shouldShowNavbar = computed(() => {
-    const user = this.authService.user(); // Valor atual do signal do usuário
+    const user = this.authService.user();
     const hiddenRoutes = ['/login', '/signup'];
     return user !== null && !hiddenRoutes.includes(this.router.url);
   });
-
-
 
 }

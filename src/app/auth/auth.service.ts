@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { User } from './user.model';
-import { catchError, tap, throwError } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 import { AuthResponse } from './authResponse.model';
 
 @Injectable({
@@ -12,8 +12,11 @@ export class AuthService {
   errorMessage = signal<string | null>(null);
 
   private readonly url = 'http://localhost:8080/api/v1/auth';
-
   private http = inject(HttpClient);
+
+  private logoutTimer: any;
+  private refreshTimer: any;
+  private isRefreshing = false;
 
   register(
     firstname: string,
@@ -23,48 +26,140 @@ export class AuthService {
     role: string
   ) {
     return this.http
-      .post<AuthResponse>(this.url + '/register', {
-        firstname: firstname,
-        lastname: lastname,
-        email: email,
-        password: password,
-        role: role,
+      .post<AuthResponse>(`${this.url}/register`, {
+        firstname,
+        lastname,
+        email,
+        password,
+        role,
       })
       .pipe(
-        catchError(err => {
-          const errorMessage = this.handleError(err);
-          console.error(errorMessage);
-          this.errorMessage.set(errorMessage);
-          return throwError(() => new Error(errorMessage));
-        }),
-        tap((resData) => {
-          this.handleAuthentication(resData);
-        })
+        catchError((err) => this.handleErrorAndEmit(err)),
+        tap((resData) => this.handleAuthentication(resData))
       );
   }
 
   login(email: string, password: string) {
     return this.http
-      .post<AuthResponse>(this.url + '/authenticate', {
-        email: email,
-        password: password,
-      })
+      .post<AuthResponse>(`${this.url}/authenticate`, { email, password })
       .pipe(
-        catchError(err =>
-          {
-            const errorMessage = this.handleError(err);
-            console.error(errorMessage);
-            this.errorMessage.set(errorMessage);
-            return throwError(() => new Error(errorMessage));
-          }
-        ),
+        catchError((err) => this.handleErrorAndEmit(err)),
+        tap((resData) => this.handleAuthentication(resData))
+      );
+  }
+
+  refreshAccessToken(): Observable<AuthResponse> {
+    if (this.isRefreshing) {
+      console.warn('Renovação de token já em andamento.');
+      return throwError(() => new Error('Renovação de token em progresso.'));
+    }
+
+    this.isRefreshing = true;
+
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) {
+      console.warn('Nenhum refresh token encontrado.');
+      this.isRefreshing = false;
+      return throwError(() => new Error('Nenhum refresh token disponível.'));
+    }
+
+    return this.http
+      .post<AuthResponse>(
+        `${this.url}/refresh-token`,
+        {},
+        {
+          headers: {
+            Authorization: 'Bearer ' + refreshToken,
+          },
+        }
+      )
+      .pipe(
         tap((resData) => {
           this.handleAuthentication(resData);
+          console.log('Token renovado e timers reiniciados.');
+        }),
+        catchError((err) => {
+          console.error('Erro ao renovar o token:', err);
+          this.logout();
+          return throwError(() => err);
+        }),
+        tap(() => {
+          this.isRefreshing = false; // Reseta a flag ao final
         })
       );
   }
 
-  private handleAuthentication(resData: AuthResponse) {
+
+  logout(): void {
+    this.user.set(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('expiration_date');
+    console.log('Usuário desconectado.');
+
+    if (this.logoutTimer) clearTimeout(this.logoutTimer);
+    if (this.refreshTimer) clearTimeout(this.refreshTimer);
+    this.isRefreshing = false;
+  }
+
+  private startRefreshTimer(expirationDate: Date): void {
+    if (this.refreshTimer) {
+      clearTimeout(this.refreshTimer);
+    }
+
+    const timeUntilRefresh = expirationDate.getTime() - new Date().getTime() - 5000;
+    if (timeUntilRefresh <= 0) {
+      console.warn('O tempo para renovação já expirou no startRefreshTimer.');
+      this.logout();
+      return;
+    }
+
+    this.refreshTimer = setTimeout(() => {
+      this.refreshAccessToken().subscribe({
+        next: () => console.log('Token renovado automaticamente.'),
+        error: (err) => {
+          console.error('Erro ao renovar automaticamente:', err);
+          this.logout();
+        }
+      });
+    }, timeUntilRefresh);
+
+    console.log(`Renovação de token agendada para daqui a ${timeUntilRefresh / 1000} segundos.`);
+  }
+
+
+  private startLogoutTimer(expirationDate: Date): void {
+    if (this.logoutTimer) {
+      clearTimeout(this.logoutTimer);
+    }
+
+    const timeUntilLogout = expirationDate.getTime() - new Date().getTime();
+    this.logoutTimer = setTimeout(() => {
+      this.logout();
+    }, timeUntilLogout);
+
+    console.log(
+      `Logout agendado para daqui a ${timeUntilLogout / 1000} segundos.`
+    );
+  }
+
+  private startTimers(expirationDate: Date): void {
+    if (this.logoutTimer) clearTimeout(this.logoutTimer);
+    if (this.refreshTimer) clearTimeout(this.refreshTimer);
+
+    this.startLogoutTimer(expirationDate);
+    this.startRefreshTimer(expirationDate);
+  }
+
+  private handleAuthentication(resData: AuthResponse): void {
+    const expirationDate = new Date(resData.expiration_date);
+
+    if (expirationDate <= new Date()) {
+      console.error('Token já expirado ao autenticar.');
+      this.logout();
+      return;
+    }
+
     const user = new User(
       resData.user.firstname,
       resData.user.lastname,
@@ -72,43 +167,47 @@ export class AuthService {
       resData.user.role,
       resData.access_token,
       resData.refresh_token,
-      new Date(resData.expiration_date)
+      expirationDate
     );
     this.user.set(user);
+
+    if (user.token) {
+      localStorage.setItem('token', user.token.toString());
+    }
+    localStorage.setItem('expiration_date', expirationDate.toISOString());
+    if (user.refreshToken) {
+      localStorage.setItem('refresh_token', user.refreshToken.toString());
+    }
+
+    console.log('Usuário autenticado. Configurando timers...');
+    this.startTimers(expirationDate);
   }
 
-    private handleError(err: HttpErrorResponse): string {
-      switch (true) {
-        case err.error instanceof ErrorEvent:
-          // Erro de rede ou erro do lado do cliente
-          return `Network error: ${err.error.message}`;
+  private handleErrorAndEmit(err: HttpErrorResponse): never {
+    const errorMessage = this.handleError(err);
+    console.error(errorMessage);
+    this.errorMessage.set(errorMessage);
+    throw new Error(errorMessage);
+  }
 
-        case typeof err.error === 'string':
-          // Quando o backend retorna apenas uma string de erro
-          return err.error;
-
-        case !!err.error?.message:
-          // Quando o backend retorna um objeto com propriedade 'message'
-          return err.error.message;
-
-        case !!err.message:
-          // Mensagem padrão do HttpErrorResponse
-          return err.message;
-
-        case err.status === 0:
-          // Servidor não respondeu (CORS, offline, etc)
-          return 'Unable to connect to the server';
-
-        case err.status >= 400 && err.status < 500:
-          // Erros 4xx (client errors)
-          return 'Invalid credentials or request';
-
-        case err.status >= 500:
-          // Erros 5xx (server errors)
-          return 'Server error, please try again later';
-
-        default:
-          return 'An unknown error occurred';
-      }
+  private handleError(err: HttpErrorResponse): string {
+    switch (true) {
+      case err.error instanceof ErrorEvent:
+        return `Network error: ${err.error.message}`;
+      case typeof err.error === 'string':
+        return err.error;
+      case !!err.error?.message:
+        return err.error.message;
+      case !!err.message:
+        return err.message;
+      case err.status === 0:
+        return 'Unable to connect to the server';
+      case err.status >= 400 && err.status < 500:
+        return 'Invalid credentials or request';
+      case err.status >= 500:
+        return 'Server error, please try again later';
+      default:
+        return 'An unknown error occurred';
     }
+  }
 }
