@@ -210,4 +210,57 @@ export class AuthService {
         return 'An unknown error occurred';
     }
   }
+
+  autoLogin(): void {
+    const token = localStorage.getItem('token');
+    const refreshToken = localStorage.getItem('refresh_token');
+    const expirationDateString = localStorage.getItem('expiration_date');
+
+    if (!token || !expirationDateString) {
+      console.log('Nenhum token ou data de expiração encontrado. Usuário não logado.');
+      return;
+    }
+
+    const expirationDate = new Date(expirationDateString);
+
+    if (expirationDate <= new Date()) {
+      console.warn('Token expirado. Usuário será desconectado.');
+      this.logout();
+      return;
+    }
+
+
+    const userData = this.decodeToken(token);
+    if (!userData) {
+      console.error('Erro ao decodificar o token. Realizando logout.');
+      this.logout();
+      return;
+    }
+
+    const user = new User(
+      userData.firstname,
+      userData.lastname,
+      userData.email,
+      userData.role,
+      token,
+      refreshToken!,
+      expirationDate
+    );
+
+    this.user.set(user);
+
+    console.log('Usuário autenticado automaticamente. Restaurando timers...');
+    this.startTimers(expirationDate);
+  }
+
+  private decodeToken(token: string): any {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(atob(base64));
+    } catch (error) {
+      console.error('Erro ao decodificar o token:', error);
+      return null;
+    }
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { ProfileDropdownComponent } from "./home/profile-dropdown/profile-dropdown.component";
 import { AuthService } from './auth/auth.service';
@@ -10,7 +10,8 @@ import { AuthService } from './auth/auth.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
+
   title = 'gym-tracker';
 
   private router = inject(Router);
@@ -25,5 +26,9 @@ export class AppComponent {
     const hiddenRoutes = ['/login', '/signup'];
     return user !== null && !hiddenRoutes.includes(this.router.url);
   });
+
+  ngOnInit(): void {
+    this.authService.autoLogin();
+  }
 
 }
