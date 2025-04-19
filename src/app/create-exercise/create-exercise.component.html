@@ -1,5 +1,5 @@
 <main class="container">
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
     <fieldset>
       <h3>Registrar Exercício</h3>
       <label for="name">Nome:</label>
@@ -8,10 +8,11 @@
       <label for="name">Tipo:</label>
       <select name="select" aria-label="Select" formControlName="type">
         <option selected disabled value="">Tipo do exercício</option>
-        <option>Peito</option>
-        <option>Perna</option>
-        <option>Costas</option>
-        <option>Cardio</option>false
+        <option value="PEITO">Peito</option>
+        <option value="PERNA">Perna</option>
+        <option value="COSTAS">Costas</option>
+        <option value="CARDIO">Cardio</option>false
+        <option value="ALONGAMENTO">Alongamento</option>
       </select>
 
       <label for="image">Imagem:</label>
