@@ -1,0 +1,23 @@
+<main class="container">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <fieldset>
+      <h3>Registrar Exercício</h3>
+      <label for="name">Nome:</label>
+      <input type="text" id="name" formControlName="name"/>
+
+      <label for="name">Tipo:</label>
+      <select name="select" aria-label="Select" formControlName="type">
+        <option selected disabled value="">Tipo do exercício</option>
+        <option>Peito</option>
+        <option>Perna</option>
+        <option>Costas</option>
+        <option>Cardio</option>false
+      </select>
+
+      <label for="image">Imagem:</label>
+      <input type="file" id="image" (change)="onFileSelected($event)" />
+
+      <button type="submit">Adicionar Exercício</button>
+    </fieldset>
+  </form>
+</main>

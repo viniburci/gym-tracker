@@ -89,7 +89,6 @@ export class AuthService {
       );
   }
 
-
   logout(): void {
     this.user.set(null);
     localStorage.removeItem('token');
@@ -107,7 +106,7 @@ export class AuthService {
       clearTimeout(this.refreshTimer);
     }
 
-    const timeUntilRefresh = expirationDate.getTime() - new Date().getTime() - 5000;
+    const timeUntilRefresh = expirationDate.getTime() - new Date().getTime() - 60000;
     if (timeUntilRefresh <= 0) {
       console.warn('O tempo para renovação já expirou no startRefreshTimer.');
       this.logout();
@@ -126,7 +125,6 @@ export class AuthService {
 
     console.log(`Renovação de token agendada para daqui a ${timeUntilRefresh / 1000} segundos.`);
   }
-
 
   private startLogoutTimer(expirationDate: Date): void {
     if (this.logoutTimer) {
@@ -228,7 +226,6 @@ export class AuthService {
       this.logout();
       return;
     }
-
 
     const userData = this.decodeToken(token);
     if (!userData) {
