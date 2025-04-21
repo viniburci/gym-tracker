@@ -23,9 +23,9 @@
       <button type="button" (click)="getImage()">getImage</button>
       <button type="button" (click)="getExercise()">getExercise</button>
 
-
+      @if (imageSrc) {
         <img [src]="imageSrc" alt="image">
-
+      }
 
     </fieldset>
   </form>

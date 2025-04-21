@@ -1,0 +1,6 @@
+img {
+  width: 150px; /* Define a largura fixa */
+  height: 150px; /* Define a altura fixa */
+  object-fit: cover; /* Ajusta o conteúdo da imagem para preencher o espaço */
+  border-radius: 8px; /* Opcional: adiciona bordas arredondadas */
+}
