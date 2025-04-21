@@ -22,6 +22,9 @@ export class CreateExerciseComponent {
   });
   selectedFile: File | null = null;
 
+  imageSrc: string | null = null;
+
+
   constructor() {}
 
   onFileSelected(event: Event): void {
@@ -39,7 +42,7 @@ export class CreateExerciseComponent {
       formData.append('type', this.form.value.type!);
       formData.append('image', this.selectedFile);
 
-      this.http.post('http://localhost:8080/exercises', formData)
+      this.exerciseService.postExercise(formData)
         .subscribe({
           next: (response) => console.log('Exercício enviado com sucesso:', response),
           error: (error) => console.error('Erro ao enviar o exercício:', error)
@@ -47,6 +50,24 @@ export class CreateExerciseComponent {
     } else {
       console.warn('Formulário inválido ou imagem não selecionada.');
     }
+  }
+
+  getExercise() {
+    this.exerciseService.getExerciseById(2).subscribe({
+      next: res => console.log(res),
+      error: err => console.log(err)
+    });
+  }
+
+  getImage() {
+    this.exerciseService.getExerciseImage(2).subscribe({
+      next: blob => {
+        const objectURL = URL.createObjectURL(blob);
+        this.imageSrc = objectURL;
+        console.log("Imagem carregada com sucesso!")
+      },
+      error: err => console.error(err)
+    });
   }
 
 }

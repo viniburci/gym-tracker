@@ -19,6 +19,14 @@
       <input type="file" id="image" (change)="onFileSelected($event)" />
 
       <button type="submit">Adicionar Exercício</button>
+
+      <button type="button" (click)="getImage()">getImage</button>
+      <button type="button" (click)="getExercise()">getExercise</button>
+
+
+        <img [src]="imageSrc" alt="image">
+
+
     </fieldset>
   </form>
 </main>

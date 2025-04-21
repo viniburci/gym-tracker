@@ -11,5 +11,16 @@ export class ExerciseService {
 
   constructor() {}
 
+  postExercise(formData: FormData) {
+    return this.http.post(this.url, formData);
+  }
+
+  getExerciseById(id: number) {
+    return this.http.get(this.url + `/${id}`);
+  }
+
+  getExerciseImage(id: number) {
+    return this.http.get(this.url + `/${id}/image`, { responseType: 'blob' });
+  }
 
 }
