@@ -1,0 +1,18 @@
+<main class="container">
+  <button mat-raised-button color="primary" [routerLink]="['/exercises/new']">
+    Criar exercício
+  </button>
+  <section>
+    <h2>Exercícios</h2>
+    <ul>
+      @for (exercise of exercises; track $index) {
+        <app-exercise-item
+          [exercise]="exercise"
+          (view)="onView($event)"
+          (edit)="onEdit($event)"
+          (delete)="onDelete($event)">
+        </app-exercise-item>
+      }
+    </ul>
+  </section>
+</main>

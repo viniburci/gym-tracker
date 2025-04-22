@@ -1,0 +1,6 @@
+img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover; /* Ajusta o conteúdo da imagem para preencher o espaço */
+  border-radius: 8px; /* adiciona bordas arredondadas */
+}

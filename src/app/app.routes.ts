@@ -2,7 +2,9 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 import { HomeComponent } from './home/home.component';
-import { CreateExerciseComponent } from './create-exercise/create-exercise.component';
+import { CreateExerciseComponent } from './exercise/create-exercise/create-exercise.component';
+import { ExerciseListComponent } from './exercise/exercise-list/exercise-list.component';
+import { ExerciseComponent } from './exercise/exercise.component';
 
 export const routes: Routes = [
   {
@@ -18,7 +20,13 @@ export const routes: Routes = [
     component: SignupComponent
   },
   {
-    path: 'new-exercise',
-    component: CreateExerciseComponent
-  }
+    path: 'exercises',
+    children: [
+      { path: '', redirectTo: 'list', pathMatch: 'full' },
+      { path: 'list', component: ExerciseListComponent },
+      { path: ':id/view', component: ExerciseComponent },
+      { path: ':id/edit', component: CreateExerciseComponent },
+      { path: 'new', component: CreateExerciseComponent }
+    ]
+  },
 ];

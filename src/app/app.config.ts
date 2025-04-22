@@ -1,13 +1,25 @@
 import { ApplicationConfig, inject } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import {
+  provideRouter,
+  withComponentInputBinding,
+  withRouterConfig,
+} from '@angular/router';
 
 import { routes } from './app.routes';
-import { HttpEvent, HttpHandlerFn, HttpRequest, provideHttpClient, withInterceptors } from '@angular/common/http';
+import {
+  HttpEvent,
+  HttpHandlerFn,
+  HttpRequest,
+  provideHttpClient,
+  withInterceptors,
+} from '@angular/common/http';
 import { AuthService } from './auth/auth.service';
 import { catchError, Observable, switchMap, throwError } from 'rxjs';
 
-function requestInterceptor(request: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
-
+function requestInterceptor(
+  request: HttpRequest<unknown>,
+  next: HttpHandlerFn
+): Observable<HttpEvent<unknown>> {
   const authService = inject(AuthService);
   const token = localStorage.getItem('token');
   const expirationDate = localStorage.getItem('expiration_date');
@@ -17,7 +29,11 @@ function requestInterceptor(request: HttpRequest<unknown>, next: HttpHandlerFn):
       headers: request.headers.set('Authorization', 'Bearer ' + token),
     });
     return next(req);
-  } else if (token && expirationDate && new Date(expirationDate) <= new Date()) {
+  } else if (
+    token &&
+    expirationDate &&
+    new Date(expirationDate) <= new Date()
+  ) {
     console.warn('Access token expirado. Tentando renovar...');
     return authService.refreshAccessToken().pipe(
       switchMap(() => {
@@ -39,5 +55,12 @@ function requestInterceptor(request: HttpRequest<unknown>, next: HttpHandlerFn):
 }
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(routes), provideHttpClient(withInterceptors([requestInterceptor]))]
+  providers: [
+    provideRouter(
+      routes,
+      withComponentInputBinding(),
+      withRouterConfig({ paramsInheritanceStrategy: 'always' })
+    ),
+    provideHttpClient(withInterceptors([requestInterceptor])),
+  ],
 };

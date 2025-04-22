@@ -1,0 +1,25 @@
+ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  padding: 0;
+}
+
+li {
+  list-style: none;
+}
+
+article {
+  padding: 1rem;
+  background: var(--pico-background-color);
+  border-radius: var(--pico-border-radius);
+  box-shadow: var(--pico-box-shadow);
+  text-align: center;
+}
+
+img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: var(--pico-border-radius);
+}

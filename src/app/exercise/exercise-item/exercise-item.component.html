@@ -1,0 +1,13 @@
+<li>
+  <article>
+    <img [src]="exercise()!.imageUrl" alt="{{ exercise()!.name }}" />
+    <h3>{{ exercise()!.name }}</h3>
+    <p>Tipo: {{ exercise()!.type }}</p>
+
+    <footer>
+      <button (click)="onView()" class="contrast">Ver</button>
+      <button (click)="onEdit()">Editar</button>
+      <button (click)="onDelete()" class="secondary">Deletar</button>
+    </footer>
+  </article>
+</li>

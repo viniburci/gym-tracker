@@ -1,1 +1,15 @@
-/* You can add global styles to this file, and also import other style files */
+html, body {
+  height: 100%; /* Define altura total */
+  margin: 0;
+  display: flex;
+  flex-direction: column; /* Organiza os elementos verticalmente */
+}
+
+app-root {
+  flex: 1; /* Ocupa todo o espaço disponível entre o header e o footer */
+}
+
+footer {
+  padding: 1rem;
+  text-align: center;
+}
