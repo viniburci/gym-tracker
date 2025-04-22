@@ -24,8 +24,8 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'list', pathMatch: 'full' },
       { path: 'list', component: ExerciseListComponent },
-      { path: ':id/view', component: ExerciseComponent },
-      { path: ':id/edit', component: CreateExerciseComponent },
+      { path: ':exerciseId/view', component: ExerciseComponent },
+      { path: ':exerciseId/edit', component: CreateExerciseComponent },
       { path: 'new', component: CreateExerciseComponent }
     ]
   },
