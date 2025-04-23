@@ -20,7 +20,7 @@ export class CreateExerciseComponent implements OnInit {
   private exerciseService = inject(ExerciseService);
   private router = inject(Router);
 
-  exerciseId = input.required<string>();
+  exerciseId = input<string>();
 
   form = new FormGroup({
     name: new FormControl('', [Validators.required]),
@@ -69,6 +69,23 @@ export class CreateExerciseComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if (this.exerciseId() !== '') {
+      if (this.form.valid && this.selectedFile) {
+        const formData = new FormData();
+        formData.append('name', this.form.value.name!);
+        formData.append('type', this.form.value.type!);
+        formData.append('image', this.selectedFile);
+
+        this.exerciseService.updateExercise(+this.exerciseId()!, formData).subscribe({
+          next: (response) =>
+            console.log('Exercício atualizado com sucesso:', response),
+          error: (error) => console.error('Erro ao atualizar o exercício:', error),
+        });
+      } else {
+        console.warn('Formulário inválido ou imagem não selecionada.');
+      }
+      return;
+    }
     if (this.form.valid && this.selectedFile) {
       const formData = new FormData();
       formData.append('name', this.form.value.name!);

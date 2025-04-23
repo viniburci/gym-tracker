@@ -23,4 +23,8 @@ export class ExerciseService {
     return this.http.get(this.url + `/${id}/image`, { responseType: 'blob' });
   }
 
+  updateExercise(id: number, formData: FormData) {
+    return this.http.put(this.url + `/${id}`, formData);
+  }
+
 }
