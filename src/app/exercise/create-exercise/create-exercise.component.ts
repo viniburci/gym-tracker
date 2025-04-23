@@ -54,6 +54,8 @@ export class CreateExerciseComponent implements OnInit {
       next: (blob) => {
         const objectURL = URL.createObjectURL(blob);
         this.imageSrc = objectURL;
+        this.selectedFile = new File([blob], 'image.png', { type: blob.type });
+        console.log('Imagem carregada:', this.imageSrc);
         console.log('Imagem carregada com sucesso!');
       },
       error: (err) => console.error(err),

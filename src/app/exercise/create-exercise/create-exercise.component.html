@@ -26,6 +26,9 @@
       @if (imageSrc) {
         <img [src]="imageSrc" alt="image">
       }
+      @if (selectedFile) {
+        <img [src]="selectedFile" alt="image2">
+      }
 
     </fieldset>
   </form>

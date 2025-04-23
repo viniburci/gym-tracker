@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { Exercise } from '../exercise.model';
 import { ExerciseItemComponent } from '../exercise-item/exercise-item.component';
 import { Router, RouterModule } from '@angular/router';
@@ -11,46 +11,44 @@ import { ExerciseService } from '../create-exercise/exercise.service';
   templateUrl: './exercise-list.component.html',
   styleUrl: './exercise-list.component.css'
 })
-export class ExerciseListComponent {
+export class ExerciseListComponent implements OnInit{
 
   private router = inject(Router);
   private exerciseService = inject(ExerciseService);
+  private cdr = inject(ChangeDetectorRef);
 
   exercises: Exercise[] = [
-    { id: 1, name: 'Agachamento', type: 'Pernas', imageUrl: 'agachamento.jpg' },
-    { id: 2, name: 'Supino', type: 'Peito', imageUrl: 'supino.jpg' },
-    { id: 3, name: 'Rosca Direta', type: 'Braços', imageUrl: 'rosca.jpg' }
+    // { id: 1, name: 'Agachamento', type: 'Pernas', imageUrl: 'agachamento.jpg' },
+    // { id: 2, name: 'Supino', type: 'Peito', imageUrl: 'supino.jpg' },
+    // { id: 3, name: 'Rosca Direta', type: 'Braços', imageUrl: 'rosca.jpg' }
   ];
+
+  ngOnInit(): void {
+    this.exerciseService.getExercises().subscribe((exercises: Exercise[]) => {
+      this.exercises = exercises.map((exercise: Exercise) => {
+        return {
+          ...exercise,
+          imageUrl: `http://localhost:8080/exercises/${exercise.id}/image`
+        };
+      });
+      this.cdr.detectChanges();
+    });
+  }
 
   onView(id: number): void {
     console.log('View exercise with id:', id);
-     this.router.navigate(['/exercise', id]);
-    // Or you can show a modal with exercise details
-    // this.modalService.open(ExerciseDetailComponent, { data: { id } });
-    // this.exerciseService.getExerciseById(id).subscribe(exercise => {
-    //   this.selectedExercise = exercise;
-    //   this.modalService.open(ExerciseDetailComponent, { data: { exercise } });
-    // });
+     this.router.navigate(['/exercises', id, 'view']);
   }
   onEdit(id: number): void {
     console.log('Edit exercise with id:', id);
-    // Implement edit logic here
-    // For example, you can navigate to the edit page with the exercise id
-    this.router.navigate(['/exercise/edit', id]);
-    // Or you can open a modal with the exercise form pre-filled
-    // this.exerciseService.getExerciseById(id).subscribe(exercise => {
-    //   this.selectedExercise = exercise;
-    //   this.modalService.open(ExerciseFormComponent, { data: { exercise } });
-    // });
+    this.router.navigate(['/exercises/', id, 'edit']);
   }
   onDelete(id: number): void {
     console.log('Delete exercise with id:', id);
-    // Implement delete logic here
-    // For example, you can filter out the exercise with the given id from the exercises array
-    this.exercises = this.exercises.filter(exercise => exercise.id !== id);
-    // You can also call a service to delete the exercise from the backend if needed
-    // this.exerciseService.deleteExercise(id).subscribe(() => {
-    //   this.exercises = this.exercises.filter(exercise => exercise.id !== id);
-    // });
+    this.exerciseService.deleteExercise(id).subscribe(() => {
+      this.exercises = this.exercises.filter(exercise => exercise.id !== id);
+      this.cdr.detectChanges();
+      console.log('Exercise deleted successfully');
+    });
   }
 }

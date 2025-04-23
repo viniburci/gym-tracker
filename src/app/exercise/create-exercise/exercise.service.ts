@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Exercise } from '../exercise.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +12,10 @@ export class ExerciseService {
   private http = inject(HttpClient);
 
   constructor() {}
+
+  getExercises(): Observable<Exercise[]> {
+    return this.http.get<Exercise[]>(this.url);
+  }
 
   postExercise(formData: FormData) {
     return this.http.post(this.url, formData);
@@ -25,6 +31,10 @@ export class ExerciseService {
 
   updateExercise(id: number, formData: FormData) {
     return this.http.put(this.url + `/${id}`, formData);
+  }
+
+  deleteExercise(id: number) {
+    return this.http.delete(this.url + `/${id}`);
   }
 
 }
