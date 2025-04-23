@@ -20,7 +20,7 @@ export class CreateExerciseComponent implements OnInit {
   private exerciseService = inject(ExerciseService);
   private router = inject(Router);
 
-  exerciseId = input<string>();
+  exerciseId = input<number>();
 
   form = new FormGroup({
     name: new FormControl('', [Validators.required]),
@@ -35,8 +35,8 @@ export class CreateExerciseComponent implements OnInit {
   ngOnInit(): void {
     console.log('ngOnInit called');
     console.log(this.exerciseId());
-    console.log('userId:', this.exerciseId());
-    if (this.exerciseId() === '') {
+    console.log('exerciseId:', this.exerciseId());
+    if (this.exerciseId() === undefined) {
       return;
     }
     this.exerciseService.getExerciseById(+this.exerciseId()!).subscribe({
@@ -69,7 +69,7 @@ export class CreateExerciseComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.exerciseId() !== '') {
+    if (this.exerciseId() !== null && !isNaN(+this.exerciseId()!)) {
       if (this.form.valid && this.selectedFile) {
         const formData = new FormData();
         formData.append('name', this.form.value.name!);
@@ -77,8 +77,7 @@ export class CreateExerciseComponent implements OnInit {
         formData.append('image', this.selectedFile);
 
         this.exerciseService.updateExercise(+this.exerciseId()!, formData).subscribe({
-          next: (response) =>
-            console.log('Exercício atualizado com sucesso:', response),
+          next: (response) => console.log('Exercício atualizado com sucesso:', response),
           error: (error) => console.error('Erro ao atualizar o exercício:', error),
         });
       } else {
@@ -86,15 +85,15 @@ export class CreateExerciseComponent implements OnInit {
       }
       return;
     }
-    if (this.form.valid && this.selectedFile) {
+
+    if (this.form.valid && this.selectedFile !== null && this.selectedFile.size > 0) {
       const formData = new FormData();
       formData.append('name', this.form.value.name!);
       formData.append('type', this.form.value.type!);
       formData.append('image', this.selectedFile);
 
       this.exerciseService.postExercise(formData).subscribe({
-        next: (response) =>
-          console.log('Exercício enviado com sucesso:', response),
+        next: (response) => console.log('Exercício enviado com sucesso:', response),
         error: (error) => console.error('Erro ao enviar o exercício:', error),
       });
     } else {
