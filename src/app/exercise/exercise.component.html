@@ -1,1 +1,14 @@
-<p>exercise works!</p>
+<section>
+  @if (exercise) {
+    <h2>{{ exercise.name }}</h2>
+    <p><strong>Tipo:</strong> {{ exercise.type }}</p>
+
+    @if (imageSrc) {
+      <img [src]="imageSrc" alt="Imagem do exercício">
+    }
+
+    <button (click)="goBack()">Voltar</button>
+  } @else {
+    <p>Exercício não encontrado.</p>
+  }
+</section>

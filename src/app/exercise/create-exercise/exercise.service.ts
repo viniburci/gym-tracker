@@ -21,8 +21,8 @@ export class ExerciseService {
     return this.http.post(this.url, formData);
   }
 
-  getExerciseById(id: number) {
-    return this.http.get(this.url + `/${id}`);
+  getExerciseById(id: number): Observable<Exercise> {
+    return this.http.get<Exercise>(this.url + `/${id}`);
   }
 
   getExerciseImage(id: number) {

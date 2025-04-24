@@ -1,0 +1,14 @@
+section {
+  text-align: center;
+  padding: 1rem;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--pico-border-radius);
+}
+
+button {
+  margin-top: 1rem;
+}

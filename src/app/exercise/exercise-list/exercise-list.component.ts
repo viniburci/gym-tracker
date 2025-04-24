@@ -8,33 +8,31 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-exercise-list',
   standalone: true,
-  imports: [ ExerciseItemComponent, RouterModule, FormsModule],
+  imports: [ExerciseItemComponent, RouterModule, FormsModule],
   templateUrl: './exercise-list.component.html',
-  styleUrl: './exercise-list.component.css'
+  styleUrl: './exercise-list.component.css',
 })
-export class ExerciseListComponent implements OnInit{
-
+export class ExerciseListComponent implements OnInit {
   private router = inject(Router);
   private exerciseService = inject(ExerciseService);
   private cdr = inject(ChangeDetectorRef);
 
-  exercises: Exercise[] = [
-    { id: 1, name: 'Agachamento', type: 'Pernas', imageUrl: 'agachamento.jpg' },
-    { id: 2, name: 'Supino', type: 'Peito', imageUrl: 'supino.jpg' },
-    { id: 3, name: 'Rosca Direta', type: 'Braços', imageUrl: 'rosca.jpg' }
-  ];
+  exercises: Exercise[] = [];
+  filteredExercises: Exercise[] = [...this.exercises];
 
   searchTerm: string = '';
   selectedType: string = '';
-  exerciseTypes: string[] = [...new Set(this.exercises.map(exercise => exercise.type))]; // Extraindo tipos únicos
-
-  filteredExercises: Exercise[] = [...this.exercises];
+  exerciseTypes: string[] = [
+    ...new Set(this.exercises.map((exercise) => exercise.type)),
+  ];
 
   filterExercises(): void {
-    this.filteredExercises = this.exercises.filter(exercise =>
-      exercise.name.toLowerCase().includes(this.searchTerm.toLowerCase()) &&
-      (this.selectedType === '' || exercise.type === this.selectedType)
+    this.filteredExercises = this.exercises.filter(
+      (exercise) =>
+        exercise.name.toLowerCase().includes(this.searchTerm.toLowerCase()) &&
+        (this.selectedType === '' || exercise.type === this.selectedType)
     );
+    console.log('Exercícios filtrados:', this.filteredExercises);
   }
 
   ngOnInit(): void {
@@ -42,25 +40,33 @@ export class ExerciseListComponent implements OnInit{
       this.exercises = exercises.map((exercise: Exercise) => {
         return {
           ...exercise,
-          imageUrl: `http://localhost:8080/exercises/${exercise.id}/image`
+          imageUrl: `http://localhost:8080/exercises/${exercise.id}/image`,
         };
       });
+      this.exerciseTypes = [
+        ...new Set(this.exercises.map((exercise) => exercise.type)),
+      ];
+      this.filteredExercises = [...this.exercises];
       this.cdr.detectChanges();
     });
   }
 
   onView(id: number): void {
     console.log('View exercise with id:', id);
-     this.router.navigate(['/exercises', id, 'view']);
+    this.router.navigate(['/exercises', id, 'view']);
   }
+
   onEdit(id: number): void {
     console.log('Edit exercise with id:', id);
     this.router.navigate(['/exercises/', id, 'edit']);
   }
+
   onDelete(id: number): void {
     console.log('Delete exercise with id:', id);
+
     this.exerciseService.deleteExercise(id).subscribe(() => {
-      this.exercises = this.exercises.filter(exercise => exercise.id !== id);
+      this.exercises = this.exercises.filter((exercise) => exercise.id !== id);
+      this.filterExercises();
       this.cdr.detectChanges();
       console.log('Exercise deleted successfully');
     });
