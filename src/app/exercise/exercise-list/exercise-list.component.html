@@ -4,8 +4,24 @@
   </button>
   <section>
     <h2>Exercícios</h2>
+
+    <input
+      type="text"
+      placeholder="Buscar exercício..."
+      [(ngModel)]="searchTerm"
+      (input)="filterExercises()"
+    >
+
+    <select [(ngModel)]="selectedType" (change)="filterExercises()">
+      <option value="">Todos</option>
+      @for (type of exerciseTypes; track $index) {
+        <option [value]="type">{{ type }}</option>
+      }
+
+    </select>
+
     <ul>
-      @for (exercise of exercises; track $index) {
+      @for (exercise of filteredExercises; track $index) {
         <app-exercise-item
           [exercise]="exercise"
           (view)="onView($event)"
