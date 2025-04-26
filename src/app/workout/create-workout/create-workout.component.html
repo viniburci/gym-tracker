@@ -1,1 +1,56 @@
-<p>create-workout works!</p>
+<section class="container">
+  <h2 class="title">Criar Workout</h2>
+
+  <form [formGroup]="workoutForm" (ngSubmit)="submitWorkout()" class="form">
+    <div class="input-group">
+      <label for="name">Nome do Workout</label>
+      <input type="text" id="name" formControlName="name" placeholder="Nome do Workout">
+      @if (workoutForm.controls['name'].invalid && workoutForm.controls['name'].touched) {
+        <small class="error">Nome obrigatório!</small>
+      }
+    </div>
+
+    <div class="input-group">
+      <label for="exercise">Selecione um Exercício</label>
+      <select id="exercise" formControlName="exerciseId">
+        <option value="">Selecione um Exercício</option>
+        @for (exercise of exercises; track $index) {
+          <option [value]="exercise.id">{{ exercise.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="inline-group">
+      <div class="input-group">
+        <label for="sets">Séries</label>
+        <input type="number" id="sets" formControlName="sets" placeholder="Séries">
+        @if(workoutForm.controls['sets'].invalid && workoutForm.controls['sets'].touched) {
+          <small class="error">Informe um número válido!</small>
+        }
+      </div>
+
+      <div class="input-group">
+        <label for="reps">Repetições</label>
+        <input type="number" id="reps" formControlName="reps" placeholder="Repetições">
+        @if(workoutForm.controls['reps'].invalid && workoutForm.controls['reps'].touched) {
+          <small class="error">Informe um número válido!</small>
+        }
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button type="button" (click)="addExercise()" class="btn btn-add">Adicionar Exercício</button>
+      <button type="submit" [disabled]="workoutForm.invalid" class="btn btn-save">Salvar Workout</button>
+    </div>
+  </form>
+
+  <h3>Exercícios Adicionados</h3>
+  <div class="exercise-list">
+    @for(exercise of selectedExercises; track $index) {
+      <div class="exercise-item">
+        <span>{{ getExerciseName(exercise.exerciseId) }} - {{ exercise.sets }}x{{ exercise.reps }}</span>
+        <button type="button" (click)="removeExercise(exercise)" class="btn btn-remove">Deletar</button>
+      </div>
+    }
+  </div>
+</section>

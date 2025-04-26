@@ -5,6 +5,7 @@ import { HomeComponent } from './home/home.component';
 import { CreateExerciseComponent } from './exercise/create-exercise/create-exercise.component';
 import { ExerciseListComponent } from './exercise/exercise-list/exercise-list.component';
 import { ExerciseComponent } from './exercise/exercise.component';
+import { CreateWorkoutComponent } from './workout/create-workout/create-workout.component';
 
 export const routes: Routes = [
   {
@@ -29,4 +30,8 @@ export const routes: Routes = [
       { path: 'new', component: CreateExerciseComponent }
     ]
   },
+  {
+    path: 'workouts',
+    component: CreateWorkoutComponent
+  }
 ];
