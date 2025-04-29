@@ -1,32 +1,30 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Workout, WorkoutExercise } from '../workout.model';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ExerciseService } from '../../exercise/create-exercise/exercise.service';
 import { Exercise } from '../../exercise/exercise.model';
 import { WorkoutService } from '../workout.service';
-import { map } from 'rxjs';
 
 @Component({
   selector: 'app-create-workout',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, FormsModule],
   templateUrl: './create-workout.component.html',
   styleUrl: './create-workout.component.css',
 })
 export class CreateWorkoutComponent implements OnInit {
 
-  exercises: Exercise[] = [];
-  selectedExercises: WorkoutExercise[] = [];
-
-  exerciseTypes: string[] = [...new Set(this.exercises.map((exercise) => exercise.type))];;
-
   private workoutService = inject(WorkoutService);
   private exerciseService = inject(ExerciseService);
 
-  constructor() {}
+  exercises: Exercise[] = [];
+  filteredExercises: Exercise[] = this.exercises;
+  selectedExercises: WorkoutExercise[] = [];
+  exerciseTypes: string[] = []
 
   workoutForm = new FormGroup({
     name: new FormControl('', Validators.required),
+    exerciseType: new FormControl(''),
     exerciseId: new FormControl(null, Validators.required),
     sets: new FormControl(1, [Validators.required, Validators.min(1)]),
     reps: new FormControl(1, [Validators.required, Validators.min(1)]),
@@ -34,7 +32,9 @@ export class CreateWorkoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadExercises();
-    console.log(this.exerciseTypes)
+    this.workoutForm.get('exerciseType')?.valueChanges.subscribe(value => {
+      this.filterExercises();
+    });
   }
 
   getExerciseName(exerciseId: number): string {
@@ -45,8 +45,22 @@ export class CreateWorkoutComponent implements OnInit {
   loadExercises(): void {
     this.exerciseService.getExercises().subscribe((exercises) => {
       this.exercises = exercises;
+      this.exerciseTypes = [...new Set(exercises.map((exercise) => exercise.type))];
+
+      this.filteredExercises = [...this.exercises];
     });
   }
+
+  filterExercises(): void {
+    const selectedType = this.workoutForm.get('exerciseType')?.value;
+
+    if (!selectedType) {
+      this.filteredExercises = [...this.exercises];
+    } else {
+      this.filteredExercises = this.exercises.filter(exercise => exercise.type === selectedType);
+    }
+  }
+
 
   addExercise(): void {
     console.log("adding exercise")

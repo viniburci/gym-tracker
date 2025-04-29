@@ -11,10 +11,19 @@
     </div>
 
     <div class="input-group">
+      <label for="selectedType">Selecione o tipo de exercício</label>
+      <select id="selectedType" (change)="filterExercises()" formControlName="exerciseType">
+        <option value="">Todos</option>
+        @for (type of exerciseTypes; track $index) {
+          <option [value]="type">{{ type }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="input-group">
       <label for="exercise">Selecione um Exercício</label>
       <select id="exercise" formControlName="exerciseId">
-        <option value="">Selecione um Exercício</option>
-        @for (exercise of exercises; track $index) {
+        @for (exercise of filteredExercises; track $index) {
           <option [value]="exercise.id">{{ exercise.name }}</option>
         }
       </select>

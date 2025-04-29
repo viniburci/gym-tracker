@@ -80,7 +80,7 @@ input:focus, select:focus {
   cursor: pointer;
   border: none;
   display: flex;
-  justify-content: center; /* 🔥 Centraliza o texto */
+  justify-content: center;
   align-items: center;
   text-align: center;
   min-width: 80px;
@@ -88,29 +88,29 @@ input:focus, select:focus {
 
 .btn-remove:hover {
   background: #e74c3c;
-  opacity: 0.8; /* 🔥 Efeito de hover */
+  opacity: 0.8;
 }
 
 .exercise-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem; /* 🔥 Garante espaçamento entre os exercícios */
-  width: 100%; /* 🔥 Faz com que ocupe a largura inteira */
+  gap: 1rem;
+  width: 100%;
 }
 
 .exercise-item {
   display: flex;
-  align-items: center; /* 🔥 Garante alinhamento vertical correto */
-  justify-content: space-between; /* 🔥 Botão fica na lateral direita */
+  align-items: center;
+  justify-content: space-between;
   padding: 0.8rem;
   background: #1f2125;
   border-radius: 8px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   gap: 1rem;
-  width: 100%; /* 🔥 Garante que ocupe a largura do `exercise-list` */
+  width: 100%;
 }
 
 .exercise-item span {
-  flex-grow: 1; /* 🔥 O nome do exercício ocupa espaço e empurra o botão para o lado */
+  flex-grow: 1;
 }
 
