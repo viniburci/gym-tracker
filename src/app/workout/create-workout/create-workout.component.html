@@ -57,7 +57,7 @@
   <div class="exercise-list">
     @for(exercise of selectedExercises; track $index) {
       <div class="exercise-item">
-        <span>{{ getExerciseName(exercise.exerciseId) }} - {{ exercise.sets }}x{{ exercise.reps }}</span>
+        <span>{{ getExerciseName(exercise.exercise.id) }} - {{ exercise.sets }}x{{ exercise.reps }}</span>
         <button type="button" (click)="removeExercise(exercise)" class="btn btn-remove">Deletar</button>
       </div>
     }
