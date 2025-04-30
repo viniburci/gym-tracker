@@ -1,0 +1,64 @@
+.container {
+  max-width: 600px;
+  margin: auto;
+  padding: 1.5rem;
+  background: var(--pico-background);
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.title {
+  text-align: center;
+  font-size: 1.6rem;
+  color: white;
+}
+
+.workout-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.workout-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem;
+  background: #1f2125;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  margin-bottom: 0.5rem;
+}
+
+.btn-remove {
+  background: #e74c3c;
+  color: white;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-width: 80px;
+}
+
+.btn-create {
+  background: #7289da;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: block;
+  margin: 1rem auto;
+  text-align: center;
+}
+
+.btn-create:hover {
+  background: #5b6eae;
+}

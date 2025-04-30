@@ -1,1 +1,26 @@
-<p>workout-list works!</p>
+<section class="container">
+  <h2 class="title">Lista de Workouts</h2>
+
+  <button routerLink="/workouts/new" class="btn btn-create">
+    Criar Novo Workout
+  </button>
+
+  @if (loading) {
+    <div>Carregando workouts...</div>
+  } @else {
+    @if (workouts.length > 0) {
+      <ul class="workout-list">
+        @for (workout of workouts; track $index) {
+          <li class="workout-item">
+            <span>{{ workout.name }}</span>
+            <button type="button" (click)="deleteWorkout(workout.id!)" class="btn btn-remove">
+              Deletar
+            </button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <div>Nenhum workout cadastrado.</div>
+    }
+  }
+</section>
