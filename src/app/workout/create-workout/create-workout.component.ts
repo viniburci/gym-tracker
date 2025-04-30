@@ -4,6 +4,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { ExerciseService } from '../../exercise/create-exercise/exercise.service';
 import { Exercise } from '../../exercise/exercise.model';
 import { WorkoutService } from '../workout.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-create-workout',
@@ -16,6 +17,7 @@ export class CreateWorkoutComponent implements OnInit {
 
   private workoutService = inject(WorkoutService);
   private exerciseService = inject(ExerciseService);
+  private authService = inject(AuthService);
 
   exercises: Exercise[] = [];
   filteredExercises: Exercise[] = this.exercises;
@@ -98,6 +100,7 @@ export class CreateWorkoutComponent implements OnInit {
     if (this.workoutForm.valid && this.selectedExercises.length > 0) {
       const workout: Workout = {
         name: this.workoutForm.get('name')?.value ?? '',
+        user: 1,//this.authService.getUserId() ?? (() => { throw new Error('User ID is required'); })(),
         workoutExercises: this.selectedExercises,
       };
 

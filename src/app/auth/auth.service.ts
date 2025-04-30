@@ -152,6 +152,9 @@ export class AuthService {
   private handleAuthentication(resData: AuthResponse): void {
     const expirationDate = new Date(resData.expiration_date);
 
+    console.log('Resposta da API:', resData);
+    console.log('Dados do usuário:', resData.user);
+
     if (expirationDate <= new Date()) {
       console.error('Token já expirado ao autenticar.');
       this.logout();
@@ -159,6 +162,7 @@ export class AuthService {
     }
 
     const user = new User(
+      resData.user.id,
       resData.user.firstname,
       resData.user.lastname,
       resData.user.email,
@@ -171,6 +175,7 @@ export class AuthService {
 
     if (user.token) {
       localStorage.setItem('token', user.token.toString());
+      localStorage.setItem('user', JSON.stringify(user));
     }
     localStorage.setItem('expiration_date', expirationDate.toISOString());
     if (user.refreshToken) {
@@ -213,6 +218,8 @@ export class AuthService {
     const token = localStorage.getItem('token');
     const refreshToken = localStorage.getItem('refresh_token');
     const expirationDateString = localStorage.getItem('expiration_date');
+    const userString = localStorage.getItem('user');
+    let storedUser = userString ? JSON.parse(userString) : null;
 
     if (!token || !expirationDateString) {
       console.log('Nenhum token ou data de expiração encontrado. Usuário não logado.');
@@ -227,22 +234,25 @@ export class AuthService {
       return;
     }
 
-    const userData = this.decodeToken(token);
-    if (!userData) {
-      console.error('Erro ao decodificar o token. Realizando logout.');
-      this.logout();
-      return;
-    }
+    // const userData = this.decodeToken(token);
+    // if (!userData) {
+    //   console.error('Erro ao decodificar o token. Realizando logout.');
+    //   this.logout();
+    //   return;
+    // }
 
     const user = new User(
-      userData.firstname,
-      userData.lastname,
-      userData.email,
-      userData.role,
+      storedUser.id,
+      storedUser.firstname,
+      storedUser.lastname,
+      storedUser.email,
+      storedUser.role,
       token,
       refreshToken!,
       expirationDate
     );
+    console.log("user auto-login id: " + user.id)
+    console.log("user auto-login: " + user)
 
     this.user.set(user);
 
@@ -250,14 +260,20 @@ export class AuthService {
     this.startTimers(expirationDate);
   }
 
-  private decodeToken(token: string): any {
+  decodeToken(token: string): any {
     try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      return JSON.parse(atob(base64));
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      console.log('Payload decodificado:', payload);
+      return payload;
     } catch (error) {
-      console.error('Erro ao decodificar o token:', error);
+      console.error('Erro ao decodificar token:', error);
       return null;
     }
+  }
+
+  getUserId(): number | null {
+    const user = this.user();
+    console.log('user:', user);
+    return user ? user.id : null;
   }
 }
