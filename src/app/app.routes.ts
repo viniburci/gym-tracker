@@ -6,6 +6,7 @@ import { CreateExerciseComponent } from './exercise/create-exercise/create-exerc
 import { ExerciseListComponent } from './exercise/exercise-list/exercise-list.component';
 import { ExerciseComponent } from './exercise/exercise.component';
 import { CreateWorkoutComponent } from './workout/create-workout/create-workout.component';
+import { WorkoutListComponent } from './workout/workout-list/workout-list.component';
 
 export const routes: Routes = [
   {
@@ -32,6 +33,10 @@ export const routes: Routes = [
   },
   {
     path: 'workouts',
-    component: CreateWorkoutComponent
+    children: [
+      { path: '', redirectTo: 'list', pathMatch: 'full' },
+      { path: 'list', component: WorkoutListComponent },
+      { path: 'new', component: CreateWorkoutComponent}
+    ]
   }
 ];
