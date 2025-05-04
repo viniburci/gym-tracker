@@ -2,11 +2,12 @@ import { Component, inject } from '@angular/core';
 import { Workout } from '../workout.model';
 import { WorkoutService } from '../workout.service';
 import { RouterLink } from '@angular/router';
+import { WorkoutItemComponent } from "../workout-item/workout-item.component";
 
 @Component({
   selector: 'app-workout-list',
   standalone: true,
-  imports: [ RouterLink],
+  imports: [RouterLink, WorkoutItemComponent],
   templateUrl: './workout-list.component.html',
   styleUrl: './workout-list.component.css'
 })

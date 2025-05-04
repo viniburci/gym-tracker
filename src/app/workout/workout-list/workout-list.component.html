@@ -9,16 +9,11 @@
     <div>Carregando workouts...</div>
   } @else {
     @if (workouts.length > 0) {
-      <ul class="workout-list">
+      <section class="workout-list">
         @for (workout of workouts; track $index) {
-          <li class="workout-item">
-            <span>{{ workout.name }}</span>
-            <button type="button" (click)="deleteWorkout(workout.id!)" class="btn btn-remove">
-              Deletar
-            </button>
-          </li>
+          <app-workout-item [workout]="workout"></app-workout-item>
         }
-      </ul>
+      </section>
     } @else {
       <div>Nenhum workout cadastrado.</div>
     }
