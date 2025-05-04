@@ -1,0 +1,31 @@
+.workout-item {
+  background: rgba(255, 255, 255, 0.1); /* 🔥 Cor levemente diferente do fundo */
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.workout-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.15); /* 💡 Fica um pouco mais claro ao passar o mouse */
+}
+
+.workout-link {
+  text-decoration: none;
+  color: var(--pico-color);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.workout-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.workout-info {
+  font-size: 1rem;
+  color: var(--pico-muted-color);
+}
