@@ -1,5 +1,5 @@
 <article class="workout-item">
-  <a routerLink="/workouts/{{ workout()?.id }}" class="workout-link">
+  <a routerLink="/workouts/{{ workout()?.id }}/view" class="workout-link">
     <h3 class="workout-title">{{ workout()?.name }}</h3>
     <p class="workout-info">Exercícios: {{ workout()?.workoutExercises?.length || 0 }}</p>
   </a>

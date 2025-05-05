@@ -2,7 +2,6 @@ export interface Workout {
   id?: number;
   name: string;
   workoutExercises: WorkoutExercise[];
-  userEmail?: string;
 }
 
 export interface WorkoutExercise {
