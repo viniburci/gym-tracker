@@ -1,6 +1,6 @@
 export interface Exercise {
   id: number;
-  name: string;
-  type: string;
-  imageUrl: string;
+  name?: string;
+  type?: string;
+  imageUrl?: string;
 }

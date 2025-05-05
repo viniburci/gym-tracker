@@ -1,6 +1,7 @@
-import { Component, inject, input, OnInit } from '@angular/core';
+import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { Workout } from './workout.model';
 import { WorkoutService } from './workout.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-workout',
@@ -12,18 +13,17 @@ import { WorkoutService } from './workout.service';
 export class WorkoutComponent implements OnInit {
 
   private workoutService = inject(WorkoutService);
+  private route = inject(ActivatedRoute);
 
-  workoutId = input<string>('workoutId');
-
-  workout: Workout | undefined;
+  workout = signal<Workout | null>(null);
 
   ngOnInit(): void {
-    this.workoutService.getWorkoutById(+this.workoutId).subscribe((workout: Workout) => {
-      this.workout = workout;
-    });
-    console.log('Workout ID:', this.workoutId);
-    console.log('Workout:', this.workout);
+    const workoutId = this.route.snapshot.paramMap.get('workoutId');
+    if (workoutId) {
+      this.workoutService.getWorkoutById(+workoutId).subscribe((workout: Workout) => {
+        this.workout.set(workout);
+      });
+    }
   }
-
 
 }

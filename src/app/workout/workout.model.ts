@@ -1,3 +1,5 @@
+import { Exercise } from "../exercise/exercise.model";
+
 export interface Workout {
   id?: number;
   name: string;
@@ -6,7 +8,7 @@ export interface Workout {
 
 export interface WorkoutExercise {
   id?: number;
-  exercise: {id: number};
+  exercise: Exercise;
   sets: number;
   reps: number;
 }

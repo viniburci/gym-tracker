@@ -1,1 +1,13 @@
-<p>workout works!</p>
+<article>
+    @if (workout != null && workout != undefined) {
+      <h2>{{ workout()?.name }}</h2>
+      <ul>
+        @for(exercise of workout()?.workoutExercises; track $index) {
+          <li>
+            <strong>Exercício #{{ exercise.exercise.name }}</strong>
+            <p>{{ exercise.sets }} séries de {{ exercise.reps }} repetições</p>
+          </li>
+        }
+      </ul>
+    }
+</article>

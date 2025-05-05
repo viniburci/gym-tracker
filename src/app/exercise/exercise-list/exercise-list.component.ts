@@ -23,13 +23,17 @@ export class ExerciseListComponent implements OnInit {
   searchTerm: string = '';
   selectedType: string = '';
   exerciseTypes: string[] = [
-    ...new Set(this.exercises.map((exercise) => exercise.type)),
+    ...new Set(this.exercises.map((exercise) => exercise.type).filter((type): type is string => type !== undefined)),
   ];
+
+  // exerciseTypes: string[] = [
+  //   ...new Set(this.exercises.map((exercise) => exercise.type)),
+  // ];
 
   filterExercises(): void {
     this.filteredExercises = this.exercises.filter(
       (exercise) =>
-        exercise.name.toLowerCase().includes(this.searchTerm.toLowerCase()) &&
+        (exercise.name?.toLowerCase().includes(this.searchTerm.toLowerCase()) ?? false) &&
         (this.selectedType === '' || exercise.type === this.selectedType)
     );
     console.log('Exercícios filtrados:', this.filteredExercises);
@@ -44,7 +48,7 @@ export class ExerciseListComponent implements OnInit {
         };
       });
       this.exerciseTypes = [
-        ...new Set(this.exercises.map((exercise) => exercise.type)),
+        ...new Set(this.exercises.map((exercise) => exercise.type).filter((type): type is string => type !== undefined)),
       ];
       this.filteredExercises = [...this.exercises];
       this.cdr.detectChanges();

@@ -39,13 +39,13 @@ export class CreateWorkoutComponent implements OnInit {
 
   getExerciseName(exerciseId: number): string {
     const exercise = this.exercises.find(e => e.id === Number(exerciseId));
-    return exercise ? exercise.name : 'Exercício não encontrado';
+    return exercise ? exercise.name ?? 'Nome não disponível' : 'Exercício não encontrado';
   }
 
   loadExercises(): void {
     this.exerciseService.getExercises().subscribe((exercises) => {
       this.exercises = exercises;
-      this.exerciseTypes = [...new Set(exercises.map((exercise) => exercise.type))];
+      this.exerciseTypes = [...new Set(exercises.map((exercise) => exercise.type).filter((type): type is string => type !== undefined))];
 
       this.filteredExercises = [...this.exercises];
     });
