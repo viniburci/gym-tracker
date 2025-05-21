@@ -11,4 +11,5 @@ export interface WorkoutExercise {
   exercise: Exercise;
   sets: number;
   reps: number;
+  position: number;
 }

@@ -5,6 +5,7 @@ import { ExerciseService } from '../../exercise/create-exercise/exercise.service
 import { Exercise } from '../../exercise/exercise.model';
 import { WorkoutService } from '../workout.service';
 
+
 @Component({
   selector: 'app-create-workout',
   standalone: true,
@@ -28,6 +29,7 @@ export class CreateWorkoutComponent implements OnInit {
     exerciseId: new FormControl(null, Validators.required),
     sets: new FormControl(1, [Validators.required, Validators.min(1)]),
     reps: new FormControl(1, [Validators.required, Validators.min(1)]),
+    position: new FormControl<number | null>(null, [Validators.required, Validators.min(0)]),
   });
 
   ngOnInit(): void {
@@ -62,11 +64,19 @@ export class CreateWorkoutComponent implements OnInit {
   }
 
   addExercise(): void {
-    console.log("adding exercise")
     const exerciseId = this.workoutForm.get('exerciseId')?.value;
     console.log("exerciseID: " + exerciseId)
-    const sets = this.workoutForm.get('sets')?.value;
-    const reps = this.workoutForm.get('reps')?.value;
+    const sets = this.workoutForm.get('sets')?.value ?? 1;
+    const reps = this.workoutForm.get('reps')?.value ?? 1;
+
+    const position = this.selectedExercises.length;
+
+    console.log("length: " + this.selectedExercises.length);
+    console.log("position: " + position);
+
+    this.workoutForm.get('position')?.setValue(position);
+    this.workoutForm.get('position')?.updateValueAndValidity();
+    this.workoutForm.updateValueAndValidity();
 
     if (!exerciseId) return;
 
@@ -74,16 +84,20 @@ export class CreateWorkoutComponent implements OnInit {
     console.log('ID buscado:', exerciseId);
 
     const selectedExercise = this.exercises.find(ex => ex.id === (+exerciseId));
-    console.log("selectedExercise: " + selectedExercise)
+    console.log("selectedExercise: " + JSON.stringify(selectedExercise, null, 2));
     if (!selectedExercise) return;
-    console.log("after return 2")
 
     this.selectedExercises = [...this.selectedExercises, {
       exercise: {id: +exerciseId},
-      sets: sets ?? 1,
-      reps: reps ?? 1
+      sets: sets,
+      reps: reps,
+      position: position,
     }];
-    console.log(this.selectedExercises)
+
+    console.log(this.selectedExercises);
+    console.log("Status do Formulário:", this.workoutForm.valid);
+    console.log("Erros no Formulário:", this.workoutForm.errors);
+    console.log("Erros nos controles:", this.workoutForm.controls);
   }
 
   removeExercise(we: WorkoutExercise) {

@@ -49,7 +49,7 @@
 
     <div class="button-group">
       <button type="button" (click)="addExercise()" class="btn btn-add">Adicionar Exercício</button>
-      <button type="submit" [disabled]="workoutForm.invalid" class="btn btn-save">Salvar Workout</button>
+      <button type="submit" [disabled]="workoutForm.invalid || selectedExercises.length === 0" class="btn btn-save">Salvar Workout</button>
     </div>
   </form>
 
