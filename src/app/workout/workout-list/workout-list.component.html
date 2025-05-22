@@ -1,12 +1,12 @@
 <section class="container">
-  <h2 class="title">Lista de Workouts</h2>
+  <h2 class="title">Lista de Treinos</h2>
 
   <button routerLink="/workouts/new" class="btn btn-create">
-    Criar Novo Workout
+    Criar Novo Treino
   </button>
 
   @if (loading) {
-    <div>Carregando workouts...</div>
+    <div>Carregando treinos...</div>
   } @else {
     @if (workouts.length > 0) {
       <section class="workout-list">
@@ -15,7 +15,7 @@
         }
       </section>
     } @else {
-      <div>Nenhum workout cadastrado.</div>
+      <div>Nenhum treino cadastrado.</div>
     }
   }
 </section>

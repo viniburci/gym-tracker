@@ -1,10 +1,10 @@
 <section class="container">
-  <h2 class="title">Criar Workout</h2>
+  <h2 class="title">Criar Treino</h2>
 
   <form [formGroup]="workoutForm" (ngSubmit)="submitWorkout()" class="form">
     <div class="input-group">
-      <label for="name">Nome do Workout</label>
-      <input type="text" id="name" formControlName="name" placeholder="Nome do Workout">
+      <label for="name">Nome do Treino</label>
+      <input type="text" id="name" formControlName="name" placeholder="Nome do Treino">
       @if (workoutForm.controls['name'].invalid && workoutForm.controls['name'].touched) {
         <small class="error">Nome obrigatório!</small>
       }
