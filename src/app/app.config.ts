@@ -15,6 +15,7 @@ import {
 } from '@angular/common/http';
 import { AuthService } from './auth/auth.service';
 import { catchError, Observable, switchMap, throwError } from 'rxjs';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 function requestInterceptor(
   request: HttpRequest<unknown>,
@@ -61,6 +62,6 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding(),
       withRouterConfig({ paramsInheritanceStrategy: 'always' })
     ),
-    provideHttpClient(withInterceptors([requestInterceptor])),
+    provideHttpClient(withInterceptors([requestInterceptor])), provideAnimationsAsync(),
   ],
 };

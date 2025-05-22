@@ -71,9 +71,6 @@ export class CreateWorkoutComponent implements OnInit {
 
     const position = this.selectedExercises.length;
 
-    console.log("length: " + this.selectedExercises.length);
-    console.log("position: " + position);
-
     this.workoutForm.get('position')?.setValue(position);
     this.workoutForm.get('position')?.updateValueAndValidity();
     this.workoutForm.updateValueAndValidity();
@@ -81,18 +78,20 @@ export class CreateWorkoutComponent implements OnInit {
     if (!exerciseId) return;
 
     console.log('Lista de Exercícios:', this.exercises);
-    console.log('ID buscado:', exerciseId);
 
     const selectedExercise = this.exercises.find(ex => ex.id === (+exerciseId));
     console.log("selectedExercise: " + JSON.stringify(selectedExercise, null, 2));
     if (!selectedExercise) return;
 
-    this.selectedExercises = [...this.selectedExercises, {
-      exercise: {id: +exerciseId},
-      sets: sets,
-      reps: reps,
-      position: position,
-    }];
+    this.selectedExercises = [
+      ...this.selectedExercises,
+      {
+        exercise: {id: +exerciseId},
+        sets: sets,
+        reps: reps,
+        position: position,
+      }
+    ];
 
     console.log(this.selectedExercises);
     console.log("Status do Formulário:", this.workoutForm.valid);
