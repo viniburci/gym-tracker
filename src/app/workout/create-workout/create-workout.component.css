@@ -114,3 +114,6 @@ input:focus, select:focus {
   flex-grow: 1;
 }
 
+.info {
+  color: #b0b3b8;
+}

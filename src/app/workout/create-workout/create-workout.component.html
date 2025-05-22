@@ -54,12 +54,18 @@
   </form>
 
   <h3>Exercícios Adicionados</h3>
-  <div class="exercise-list">
+  @if(selectedExercises.length >= 2){
+    <p>
+      <small class="info">*Você pode arrastar os exercicios para deixa-los em ordens diferentes*</small>
+    </p>
+  }
+  <div cdkDropList class="exercise-list" (cdkDropListDropped)="drop($event)">
     @for(exercise of selectedExercises; track $index) {
-      <div class="exercise-item">
+      <div cdkDrag class="exercise-item">
         <span>{{ getExerciseName(exercise.exercise.id) }} - {{ exercise.sets }}x{{ exercise.reps }}</span>
         <button type="button" (click)="removeExercise(exercise)" class="btn btn-remove">Deletar</button>
       </div>
     }
   </div>
+
 </section>

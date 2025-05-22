@@ -4,12 +4,13 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { ExerciseService } from '../../exercise/create-exercise/exercise.service';
 import { Exercise } from '../../exercise/exercise.model';
 import { WorkoutService } from '../workout.service';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 
 
 @Component({
   selector: 'app-create-workout',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule],
+  imports: [ReactiveFormsModule, FormsModule, DragDropModule],
   templateUrl: './create-workout.component.html',
   styleUrl: './create-workout.component.css',
 })
@@ -123,5 +124,9 @@ export class CreateWorkoutComponent implements OnInit {
     } else {
       console.warn('Preencha os dados corretamente!');
     }
+  }
+
+  drop(event: CdkDragDrop<{title: string; poster: string}[]>) {
+    moveItemInArray(this.selectedExercises, event.previousIndex, event.currentIndex);
   }
 }
