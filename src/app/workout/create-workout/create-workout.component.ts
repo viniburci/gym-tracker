@@ -128,5 +128,15 @@ export class CreateWorkoutComponent implements OnInit {
 
   drop(event: CdkDragDrop<{title: string; poster: string}[]>) {
     moveItemInArray(this.selectedExercises, event.previousIndex, event.currentIndex);
+
+    this.selectedExercises.forEach((exercise, index) => {
+      exercise.position = index;
+    });
+
+    // this.selectedExercises = [...this.selectedExercises];
+    // this.workoutForm.get('position')?.setValue(this.selectedExercises.length);
+    // this.workoutForm.get('position')?.updateValueAndValidity();
+    // this.workoutForm.updateValueAndValidity();
+    console.log("Lista de Exercícios:", this.selectedExercises);
   }
 }
