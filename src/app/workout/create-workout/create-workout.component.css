@@ -117,3 +117,19 @@ input:focus, select:focus {
 .info {
   color: #b0b3b8;
 }
+
+.input-small {
+  width: 60px;
+  padding: 4px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.input-small::-webkit-inner-spin-button,
+.input-small::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

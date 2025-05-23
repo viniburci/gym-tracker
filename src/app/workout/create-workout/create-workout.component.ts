@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Workout, WorkoutExercise } from '../workout.model';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ExerciseService } from '../../exercise/create-exercise/exercise.service';
@@ -133,10 +133,41 @@ export class CreateWorkoutComponent implements OnInit {
       exercise.position = index;
     });
 
-    // this.selectedExercises = [...this.selectedExercises];
-    // this.workoutForm.get('position')?.setValue(this.selectedExercises.length);
-    // this.workoutForm.get('position')?.updateValueAndValidity();
-    // this.workoutForm.updateValueAndValidity();
     console.log("Lista de Exercícios:", this.selectedExercises);
+  }
+
+  updateExerciseReps(id: number, event: Event) {
+    const input = event.target as HTMLInputElement;
+    const newValue = Number(input.value);
+
+    if (isNaN(newValue) || newValue < 1) {
+      input.value = '1';
+      return;
+    }
+
+    this.selectedExercises = [...this.selectedExercises.map(workoutExercise =>
+      workoutExercise.exercise.id === id
+        ? { ...workoutExercise, reps: newValue }
+        : workoutExercise
+    )];
+
+    console.log("reps atualizados:", this.selectedExercises);
+  }
+
+  updateExerciseSets(id: number, event: Event) {
+    const input = event.target as HTMLInputElement;
+    const newValue = Number(input.value);
+
+    if (isNaN(newValue) || newValue < 1) {
+      input.value = '1';
+      return;
+    }
+
+    this.selectedExercises = [...this.selectedExercises.map(workoutExercise =>
+      workoutExercise.exercise.id === id
+        ? { ...workoutExercise, sets: newValue }
+        : workoutExercise
+    )];
+    console.log("sets atualizados:", this.selectedExercises);
   }
 }

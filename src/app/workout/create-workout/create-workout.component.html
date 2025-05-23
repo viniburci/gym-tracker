@@ -60,9 +60,13 @@
     </p>
   }
   <div cdkDropList class="exercise-list" (cdkDropListDropped)="drop($event)">
-    @for(exercise of selectedExercises; track $index) {
+    @for(exercise of selectedExercises; track exercise.exercise.id) {
       <div cdkDrag class="exercise-item">
-        <span>{{ getExerciseName(exercise.exercise.id) }} - {{ exercise.sets }}x{{ exercise.reps }}</span>
+        <span cdkDragHandle>{{ getExerciseName(exercise.exercise.id) }} - {{ exercise.sets }}x{{ exercise.reps }}</span>
+
+        <input type="number" [value]="exercise.sets" (change)="updateExerciseSets(exercise.exercise.id!, $event)" min="1" class="input-small">x
+        <input type="number" [value]="exercise.reps" (change)="updateExerciseReps(exercise.exercise.id!, $event)" min="1" class="input-small">
+
         <button type="button" (click)="removeExercise(exercise)" class="btn btn-remove">Deletar</button>
       </div>
     }
