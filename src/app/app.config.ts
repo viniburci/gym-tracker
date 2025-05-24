@@ -6,13 +6,7 @@ import {
 } from '@angular/router';
 
 import { routes } from './app.routes';
-import {
-  HttpEvent,
-  HttpHandlerFn,
-  HttpRequest,
-  provideHttpClient,
-  withInterceptors,
-} from '@angular/common/http';
+import { HttpEvent, HttpHandlerFn, HttpRequest, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { AuthService } from './auth/auth.service';
 import { catchError, Observable, switchMap, throwError } from 'rxjs';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
