@@ -10,11 +10,10 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-create-exercise',
-  standalone: true,
-  imports: [ReactiveFormsModule],
-  templateUrl: './create-exercise.component.html',
-  styleUrl: './create-exercise.component.css',
+    selector: 'app-create-exercise',
+    imports: [ReactiveFormsModule],
+    templateUrl: './create-exercise.component.html',
+    styleUrl: './create-exercise.component.css'
 })
 export class CreateExerciseComponent implements OnInit {
   private exerciseService = inject(ExerciseService);

@@ -4,11 +4,10 @@ import { ActivatedRoute } from '@angular/router';
 import { ExerciseService } from './create-exercise/exercise.service';
 
 @Component({
-  selector: 'app-exercise',
-  standalone: true,
-  imports: [],
-  templateUrl: './exercise.component.html',
-  styleUrl: './exercise.component.css'
+    selector: 'app-exercise',
+    imports: [],
+    templateUrl: './exercise.component.html',
+    styleUrl: './exercise.component.css'
 })
 export class ExerciseComponent {
   private route = inject(ActivatedRoute);

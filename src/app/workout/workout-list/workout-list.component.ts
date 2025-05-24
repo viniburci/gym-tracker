@@ -5,11 +5,10 @@ import { RouterLink } from '@angular/router';
 import { WorkoutItemComponent } from "../workout-item/workout-item.component";
 
 @Component({
-  selector: 'app-workout-list',
-  standalone: true,
-  imports: [RouterLink, WorkoutItemComponent],
-  templateUrl: './workout-list.component.html',
-  styleUrl: './workout-list.component.css'
+    selector: 'app-workout-list',
+    imports: [RouterLink, WorkoutItemComponent],
+    templateUrl: './workout-list.component.html',
+    styleUrl: './workout-list.component.css'
 })
 export class WorkoutListComponent {
   workouts: Workout[] = [];

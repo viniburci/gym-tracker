@@ -2,11 +2,10 @@ import { Component, input, output } from '@angular/core';
 import { Exercise } from '../exercise.model';
 
 @Component({
-  selector: 'app-exercise-item',
-  standalone: true,
-  imports: [],
-  templateUrl: './exercise-item.component.html',
-  styleUrl: './exercise-item.component.css'
+    selector: 'app-exercise-item',
+    imports: [],
+    templateUrl: './exercise-item.component.html',
+    styleUrl: './exercise-item.component.css'
 })
 export class ExerciseItemComponent {
 

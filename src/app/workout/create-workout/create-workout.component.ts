@@ -8,11 +8,10 @@ import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-
 
 
 @Component({
-  selector: 'app-create-workout',
-  standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, DragDropModule],
-  templateUrl: './create-workout.component.html',
-  styleUrl: './create-workout.component.css',
+    selector: 'app-create-workout',
+    imports: [ReactiveFormsModule, FormsModule, DragDropModule],
+    templateUrl: './create-workout.component.html',
+    styleUrl: './create-workout.component.css'
 })
 export class CreateWorkoutComponent implements OnInit {
 

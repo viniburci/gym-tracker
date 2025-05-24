@@ -6,11 +6,10 @@ import { ExerciseService } from '../create-exercise/exercise.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-exercise-list',
-  standalone: true,
-  imports: [ExerciseItemComponent, RouterModule, FormsModule],
-  templateUrl: './exercise-list.component.html',
-  styleUrl: './exercise-list.component.css',
+    selector: 'app-exercise-list',
+    imports: [ExerciseItemComponent, RouterModule, FormsModule],
+    templateUrl: './exercise-list.component.html',
+    styleUrl: './exercise-list.component.css'
 })
 export class ExerciseListComponent implements OnInit {
   private router = inject(Router);

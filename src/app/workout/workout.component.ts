@@ -4,11 +4,10 @@ import { WorkoutService } from './workout.service';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-workout',
-  standalone: true,
-  imports: [],
-  templateUrl: './workout.component.html',
-  styleUrl: './workout.component.css'
+    selector: 'app-workout',
+    imports: [],
+    templateUrl: './workout.component.html',
+    styleUrl: './workout.component.css'
 })
 export class WorkoutComponent implements OnInit {
 
