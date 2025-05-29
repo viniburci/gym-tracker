@@ -17,6 +17,7 @@ export class AuthService {
   private logoutTimer: any;
   private refreshTimer: any;
   private isRefreshing = false;
+  private readonly REFRESH_BUFFER_MS = 180000;
 
   register(
     firstname: string,
@@ -106,7 +107,7 @@ export class AuthService {
       clearTimeout(this.refreshTimer);
     }
 
-    const timeUntilRefresh = expirationDate.getTime() - new Date().getTime() - 60000;
+    const timeUntilRefresh = expirationDate.getTime() - new Date().getTime() - this.REFRESH_BUFFER_MS;
     if (timeUntilRefresh <= 0) {
       console.warn('O tempo para renovação já expirou no startRefreshTimer.');
       this.logout();
@@ -123,7 +124,7 @@ export class AuthService {
       });
     }, timeUntilRefresh);
 
-    console.log(`Renovação de token agendada para daqui a ${timeUntilRefresh / 1000} segundos.`);
+    console.log(`Renovação de token agendada para daqui a ${timeUntilRefresh / 1000} segundos (${this.REFRESH_BUFFER_MS / 1000} segundos antes da expiração).`);
   }
 
   private startLogoutTimer(expirationDate: Date): void {
