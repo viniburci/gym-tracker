@@ -1,7 +1,27 @@
 <main class="container">
+  @if (isLoading) {
+    <div class="loading-overlay">
+      <div class="loading-spinner"></div>
+      <span>Carregando exercício...</span>
+    </div>
+  }
+
   <form [formGroup]="form" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
-    <fieldset>
+    <fieldset [class.disabled]="isLoading">
       <h2 class="page-title">Registrar Exercício</h2>
+
+      @if (errorMessage) {
+        <div class="error-banner">
+          {{ errorMessage }}
+        </div>
+      }
+
+      @if (successMessage) {
+        <div class="success-banner">
+          {{ successMessage }}
+        </div>
+      }
+
       <label for="name">Nome:</label>
       <input type="text" id="name" formControlName="name"/>
       @if (form.get('name')?.invalid && form.get('name')?.touched) {
@@ -33,7 +53,7 @@
           <div class="upload-placeholder">
             <mat-icon class="upload-icon">cloud_upload</mat-icon>
             <span>Arraste uma imagem ou clique aqui</span>
-            <small>Apenas imagens • Máximo 2MB</small>
+            <small>Apenas imagens (JPG, PNG) • Máximo 2MB</small>
             <input
               type="file"
               #fileInput
@@ -59,7 +79,14 @@
         <small class="error">Imagem é obrigatória</small>
       }
 
-      <button type="submit" class="submit-button" [disabled]="form.invalid || !selectedFile">Salvar Exercício</button>
+      <button type="submit" class="submit-button" [disabled]="form.invalid || !selectedFile || isSubmitting">
+        @if (isSubmitting) {
+          <div class="button-spinner"></div>
+          <span>Salvando...</span>
+        } @else {
+          Salvar Exercício
+        }
+      </button>
     </fieldset>
   </form>
 </main>

@@ -9,6 +9,8 @@ import { ExerciseService } from './exercise.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { environment } from '../../../environments/environment';
+import { finalize } from 'rxjs';
 
 @Component({
     selector: 'app-create-exercise',
@@ -35,6 +37,10 @@ export class CreateExerciseComponent implements OnInit {
   selectedFile: File | null = null;
   imageSrc: string | null = null;
   isDragging = false;
+  errorMessage: string | null = null;
+  successMessage: string | null = null;
+  isLoading = false;
+  isSubmitting = false;
 
   constructor() {}
 
@@ -42,6 +48,8 @@ export class CreateExerciseComponent implements OnInit {
     if (this.exerciseId() === undefined) {
       return;
     }
+
+    this.isLoading = true;
     this.exerciseService.getExerciseById(+this.exerciseId()!).subscribe({
       next: (res) => {
         const exercise = res as { name: string; type: string };
@@ -51,17 +59,31 @@ export class CreateExerciseComponent implements OnInit {
         });
         console.log('Exercício carregado com sucesso!');
       },
-      error: (err) => console.log(err),
+      error: (error) => {
+        this.errorMessage = error.message;
+        console.error(error);
+      },
+      complete: () => {
+        this.loadExerciseImage();
+      }
     });
+  }
+
+  private loadExerciseImage(): void {
     this.exerciseService.getExerciseImage(+this.exerciseId()!).subscribe({
       next: (blob) => {
         const objectURL = URL.createObjectURL(blob);
         this.imageSrc = objectURL;
         this.selectedFile = new File([blob], 'image.png', { type: blob.type });
-        console.log('Imagem carregada:', this.imageSrc);
         console.log('Imagem carregada com sucesso!');
       },
-      error: (err) => console.error(err),
+      error: (error) => {
+        this.errorMessage = error.message;
+        console.error(error);
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
     });
   }
 
@@ -91,17 +113,41 @@ export class CreateExerciseComponent implements OnInit {
     }
   }
 
-  private handleFile(file: File) {
-    if (file.type.startsWith('image/')) {
-      this.selectedFile = file;
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.imageSrc = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    } else {
-      console.warn('Por favor, selecione apenas arquivos de imagem.');
+  private validateFile(file: File): string | null {
+    // Check file size
+    if (file.size > environment.maxImageSize) {
+      return `Arquivo muito grande. Tamanho máximo: ${environment.maxImageSize / (1024 * 1024)}MB`;
     }
+
+    // Check file type
+    if (!environment.allowedImageTypes.includes(file.type)) {
+      return 'Tipo de arquivo não permitido. Use: JPG ou PNG';
+    }
+
+    return null;
+  }
+
+  private handleFile(file: File) {
+    this.errorMessage = null;
+    const error = this.validateFile(file);
+    
+    if (error) {
+      this.errorMessage = error;
+      console.error(error);
+      return;
+    }
+
+    this.selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.imageSrc = e.target.result;
+    };
+    reader.onerror = () => {
+      this.errorMessage = 'Erro ao ler o arquivo. Tente novamente.';
+      this.selectedFile = null;
+      this.imageSrc = null;
+    };
+    reader.readAsDataURL(file);
   }
 
   removeFile(): void {
@@ -111,43 +157,52 @@ export class CreateExerciseComponent implements OnInit {
   }
 
   onSubmit(): void {
+    this.errorMessage = null;
+    this.successMessage = null;
+    
     Object.keys(this.form.controls).forEach(key => {
       const control = this.form.get(key);
       control?.markAsTouched();
     });
     this.form.markAsTouched();
 
-    if (this.exerciseId() !== null && !isNaN(+this.exerciseId()!)) {
-      if (this.form.valid && this.selectedFile) {
-        const formData = new FormData();
-        formData.append('name', this.form.value.name!);
-        formData.append('type', this.form.value.type!);
-        formData.append('image', this.selectedFile);
-
-        this.exerciseService.updateExercise(+this.exerciseId()!, formData).subscribe({
-          next: (response) => {
-            console.log('Exercício atualizado com sucesso:', response);
-            this.router.navigate(['/exercises']);
-          },
-          error: (error) => console.error('Erro ao atualizar o exercício:', error),
-        });
-      }
+    if (!this.form.valid || !this.selectedFile) {
       return;
     }
 
-    if (this.form.valid && this.selectedFile !== null && this.selectedFile.size > 0) {
-      const formData = new FormData();
-      formData.append('name', this.form.value.name!);
-      formData.append('type', this.form.value.type!);
-      formData.append('image', this.selectedFile);
+    this.isSubmitting = true;
+    const formData = new FormData();
+    formData.append('name', this.form.value.name!);
+    formData.append('type', this.form.value.type!);
+    formData.append('image', this.selectedFile);
 
-      this.exerciseService.postExercise(formData).subscribe({
-        next: (response) => {
-          console.log('Exercício enviado com sucesso:', response);
-          this.router.navigate(['/exercises']);
-        },
-        error: (error) => console.error('Erro ao enviar o exercício:', error),
-      });
+    if (this.exerciseId() !== null && !isNaN(+this.exerciseId()!)) {
+      this.exerciseService.updateExercise(+this.exerciseId()!, formData)
+        .pipe(finalize(() => this.isSubmitting = false))
+        .subscribe({
+          next: () => {
+            this.successMessage = 'Exercício atualizado com sucesso!';
+            setTimeout(() => this.router.navigate(['/exercises']), 1500);
+          },
+          error: (error) => {
+            this.errorMessage = error.message;
+            console.error('Erro ao atualizar o exercício:', error);
+          },
+        });
+      return;
     }
+
+    this.exerciseService.postExercise(formData)
+      .pipe(finalize(() => this.isSubmitting = false))
+      .subscribe({
+        next: () => {
+          this.successMessage = 'Exercício criado com sucesso!';
+          setTimeout(() => this.router.navigate(['/exercises']), 1500);
+        },
+        error: (error) => {
+          this.errorMessage = error.message;
+          console.error('Erro ao enviar o exercício:', error);
+        },
+      });
   }
 }
