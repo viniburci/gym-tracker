@@ -4,6 +4,9 @@
       <h2 class="page-title">Registrar Exercício</h2>
       <label for="name">Nome:</label>
       <input type="text" id="name" formControlName="name"/>
+      @if (form.get('name')?.invalid && form.get('name')?.touched) {
+        <small class="error">Nome é obrigatório</small>
+      }
 
       <label for="name">Tipo:</label>
       <select name="select" aria-label="Select" formControlName="type">
@@ -14,11 +17,15 @@
         <option value="CARDIO">Cardio</option>
         <option value="ALONGAMENTO">Alongamento</option>
       </select>
+      @if (form.get('type')?.invalid && form.get('type')?.touched) {
+        <small class="error">Tipo é obrigatório</small>
+      }
 
       <label>Imagem do Exercício:</label>
       <div 
         class="upload-zone"
         [class.dragover]="isDragging"
+        [class.invalid]="!selectedFile && form.touched"
         (dragover)="onDragOver($event)"
         (dragleave)="onDragLeave($event)"
         (drop)="onFileDropped($event)">
@@ -48,8 +55,11 @@
           </div>
         }
       </div>
+      @if (!selectedFile && form.touched) {
+        <small class="error">Imagem é obrigatória</small>
+      }
 
-      <button type="submit" class="submit-button">Adicionar Exercício</button>
+      <button type="submit" class="submit-button" [disabled]="form.invalid || !selectedFile">Salvar Exercício</button>
     </fieldset>
   </form>
 </main>

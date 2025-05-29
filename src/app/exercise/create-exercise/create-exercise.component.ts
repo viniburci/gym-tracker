@@ -104,12 +104,19 @@ export class CreateExerciseComponent implements OnInit {
     }
   }
 
-  removeFile() {
+  removeFile(): void {
     this.selectedFile = null;
     this.imageSrc = null;
+    this.form.markAsTouched();
   }
 
   onSubmit(): void {
+    Object.keys(this.form.controls).forEach(key => {
+      const control = this.form.get(key);
+      control?.markAsTouched();
+    });
+    this.form.markAsTouched();
+
     if (this.exerciseId() !== null && !isNaN(+this.exerciseId()!)) {
       if (this.form.valid && this.selectedFile) {
         const formData = new FormData();
@@ -124,8 +131,6 @@ export class CreateExerciseComponent implements OnInit {
           },
           error: (error) => console.error('Erro ao atualizar o exercício:', error),
         });
-      } else {
-        console.warn('Formulário inválido ou imagem não selecionada.');
       }
       return;
     }
@@ -143,8 +148,6 @@ export class CreateExerciseComponent implements OnInit {
         },
         error: (error) => console.error('Erro ao enviar o exercício:', error),
       });
-    } else {
-      console.warn('Formulário inválido ou imagem não selecionada.');
     }
   }
 }
