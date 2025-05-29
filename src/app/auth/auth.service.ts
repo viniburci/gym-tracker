@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { User } from './user.model';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 import { AuthResponse } from './authResponse.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -10,14 +11,14 @@ import { AuthResponse } from './authResponse.model';
 export class AuthService {
   user = signal<User | null>(null);
   errorMessage = signal<string | null>(null);
-
-  private readonly url = 'http://localhost:8080/api/v1/auth';
   private http = inject(HttpClient);
+
+  private readonly url = environment.apiUrl;
 
   private logoutTimer: any;
   private refreshTimer: any;
   private isRefreshing = false;
-  private readonly REFRESH_BUFFER_MS = 180000;
+  private readonly REFRESH_BUFFER_MS = environment.refreshTokenBuffer;
 
   register(
     firstname: string,
