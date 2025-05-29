@@ -4,3 +4,305 @@ img {
   object-fit: cover; /* Ajusta o conteúdo da imagem para preencher o espaço */
   border-radius: 8px; /* adiciona bordas arredondadas */
 }
+
+.custom-dropzone {
+  margin: 20px 0;
+  height: 180px;
+  background: #f5f5f5;
+  border: 2px dashed #ddd;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
+}
+
+.custom-dropzone:hover {
+  border-color: #3f51b5;
+  background: #fafafa;
+}
+
+.dropzone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+}
+
+.dropzone-content i {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.dropzone-content span {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.dropzone-content small {
+  font-size: 12px;
+  color: #999;
+}
+
+.preview-image {
+  max-width: 200px;
+  margin-top: 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+ngx-dropzone-image-preview {
+  max-width: 150px !important;
+  max-height: 150px !important;
+  margin: 10px !important;
+}
+
+.upload-card {
+  margin: 20px 0;
+  background: #fafafa;
+  border: 2px dashed #ccc;
+  transition: all 0.3s ease;
+}
+
+.upload-card.dragover {
+  border-color: #3f51b5;
+  background: #f0f0f0;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 180px;
+  color: #666;
+}
+
+.upload-placeholder mat-icon {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
+  margin-bottom: 16px;
+  color: #3f51b5;
+}
+
+.upload-placeholder span {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.upload-placeholder small {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 16px;
+}
+
+.preview-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 4px;
+}
+
+.preview-container button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Form styles */
+fieldset {
+  border: none;
+  padding: 20px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+input[type="text"],
+select {
+  width: 100%;
+  padding: 0.6rem;
+  border: 2px solid #40444c;
+  background: #1f2125;
+  border-radius: 6px;
+  color: white;
+}
+
+input[type="text"]:focus,
+select:focus {
+  border-color: #7289da;
+  outline: none;
+}
+
+select option {
+  background: #1f2125;
+  color: white;
+}
+
+label {
+  color: #b0b3b8;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.page-title {
+  margin: 0 0 30px 0;
+  color: #ffffff;
+  font-size: 1.6rem;
+  text-align: center;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  padding: 1.5rem;
+  background: #2a2d35;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Upload zone styles */
+.upload-zone {
+  margin: 20px 0;
+  background: #1f2125;
+  border: 2px dashed #40444c;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.upload-zone.dragover {
+  border-color: #7289da;
+  background: #2a2d35;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 180px;
+  color: #b0b3b8;
+}
+
+.upload-icon {
+  font-size: 48px !important;
+  height: 48px !important;
+  width: 48px !important;
+  margin-bottom: 16px;
+  color: #7289da;
+}
+
+.upload-placeholder span {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: #b0b3b8;
+}
+
+.upload-placeholder small {
+  font-size: 12px;
+  color: #b0b3b8;
+  margin-bottom: 16px;
+}
+
+/* Preview styles */
+.preview-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  background: #1f2125;
+  border-radius: 6px;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+/* Button styles */
+.select-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #7289da;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: opacity 0.3s ease;
+}
+
+.select-button:hover {
+  opacity: 0.8;
+}
+
+.remove-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: none;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  background: #40444c;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.remove-button:hover {
+  background: #e74c3c;
+}
+
+.remove-button mat-icon {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.submit-button {
+  padding: 0.6rem 1.2rem;
+  background-color: #43b581;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.submit-button:hover {
+  opacity: 0.8;
+}
+
+.submit-button:disabled {
+  background-color: #40444c;
+  cursor: not-allowed;
+  opacity: 0.5;
+}

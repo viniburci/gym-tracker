@@ -1,7 +1,7 @@
 <main class="container">
   <form [formGroup]="form" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
     <fieldset>
-      <h3>Registrar Exercício</h3>
+      <h2 class="page-title">Registrar Exercício</h2>
       <label for="name">Nome:</label>
       <input type="text" id="name" formControlName="name"/>
 
@@ -11,25 +11,45 @@
         <option value="PEITO">Peito</option>
         <option value="PERNA">Perna</option>
         <option value="COSTAS">Costas</option>
-        <option value="CARDIO">Cardio</option>false
+        <option value="CARDIO">Cardio</option>
         <option value="ALONGAMENTO">Alongamento</option>
       </select>
 
-      <label for="image">Imagem:</label>
-      <input type="file" id="image" (change)="onFileSelected($event)" />
+      <label>Imagem do Exercício:</label>
+      <div 
+        class="upload-zone"
+        [class.dragover]="isDragging"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onFileDropped($event)">
+        @if (!selectedFile) {
+          <div class="upload-placeholder">
+            <mat-icon class="upload-icon">cloud_upload</mat-icon>
+            <span>Arraste uma imagem ou clique aqui</span>
+            <small>Apenas imagens • Máximo 2MB</small>
+            <input
+              type="file"
+              #fileInput
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              style="display: none"
+            />
+            <button class="select-button" type="button" (click)="fileInput.click()">
+              <mat-icon>add_photo_alternate</mat-icon>
+              Selecionar Imagem
+            </button>
+          </div>
+        } @else {
+          <div class="preview-container">
+            <img [src]="imageSrc" alt="Preview da imagem" class="preview-image">
+            <button class="remove-button" type="button" (click)="removeFile()">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        }
+      </div>
 
-      <button type="submit">Adicionar Exercício</button>
-
-      <button type="button" (click)="getImage()">getImage</button>
-      <button type="button" (click)="getExercise()">getExercise</button>
-
-      @if (imageSrc) {
-        <img [src]="imageSrc" alt="image">
-      }
-      @if (selectedFile) {
-        <img [src]="selectedFile" alt="image2">
-      }
-
+      <button type="submit" class="submit-button">Adicionar Exercício</button>
     </fieldset>
   </form>
 </main>

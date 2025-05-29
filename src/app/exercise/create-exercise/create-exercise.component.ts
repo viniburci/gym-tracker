@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit, signal } from '@angular/core';
+import { Component, inject, input, OnInit } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -6,12 +6,18 @@ import {
   Validators,
 } from '@angular/forms';
 import { ExerciseService } from './exercise.service';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-create-exercise',
-    imports: [ReactiveFormsModule],
+    standalone: true,
+    imports: [
+      ReactiveFormsModule,
+      CommonModule,
+      MatIconModule
+    ],
     templateUrl: './create-exercise.component.html',
     styleUrl: './create-exercise.component.css'
 })
@@ -25,16 +31,14 @@ export class CreateExerciseComponent implements OnInit {
     name: new FormControl('', [Validators.required]),
     type: new FormControl('', [Validators.required]),
   });
+  
   selectedFile: File | null = null;
-
   imageSrc: string | null = null;
+  isDragging = false;
 
   constructor() {}
 
   ngOnInit(): void {
-    console.log('ngOnInit called');
-    console.log(this.exerciseId());
-    console.log('exerciseId:', this.exerciseId());
     if (this.exerciseId() === undefined) {
       return;
     }
@@ -61,12 +65,48 @@ export class CreateExerciseComponent implements OnInit {
     });
   }
 
-  onFileSelected(event: Event): void {
+  onFileDropped(event: DragEvent) {
+    event.preventDefault();
+    this.isDragging = false;
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      this.handleFile(files[0]);
+    }
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    this.isDragging = false;
+  }
+
+  onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-      console.log('Arquivo selecionado:', this.selectedFile);
+      this.handleFile(input.files[0]);
     }
+  }
+
+  private handleFile(file: File) {
+    if (file.type.startsWith('image/')) {
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imageSrc = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      console.warn('Por favor, selecione apenas arquivos de imagem.');
+    }
+  }
+
+  removeFile() {
+    this.selectedFile = null;
+    this.imageSrc = null;
   }
 
   onSubmit(): void {
@@ -78,7 +118,10 @@ export class CreateExerciseComponent implements OnInit {
         formData.append('image', this.selectedFile);
 
         this.exerciseService.updateExercise(+this.exerciseId()!, formData).subscribe({
-          next: (response) => console.log('Exercício atualizado com sucesso:', response),
+          next: (response) => {
+            console.log('Exercício atualizado com sucesso:', response);
+            this.router.navigate(['/exercises']);
+          },
           error: (error) => console.error('Erro ao atualizar o exercício:', error),
         });
       } else {
@@ -94,29 +137,14 @@ export class CreateExerciseComponent implements OnInit {
       formData.append('image', this.selectedFile);
 
       this.exerciseService.postExercise(formData).subscribe({
-        next: (response) => console.log('Exercício enviado com sucesso:', response),
+        next: (response) => {
+          console.log('Exercício enviado com sucesso:', response);
+          this.router.navigate(['/exercises']);
+        },
         error: (error) => console.error('Erro ao enviar o exercício:', error),
       });
     } else {
       console.warn('Formulário inválido ou imagem não selecionada.');
     }
-  }
-
-  getExercise() {
-    this.exerciseService.getExerciseById(1).subscribe({
-      next: (res) => console.log(res),
-      error: (err) => console.log(err),
-    });
-  }
-
-  getImage() {
-    this.exerciseService.getExerciseImage(1).subscribe({
-      next: (blob) => {
-        const objectURL = URL.createObjectURL(blob);
-        this.imageSrc = objectURL;
-        console.log('Imagem carregada com sucesso!');
-      },
-      error: (err) => console.error(err),
-    });
   }
 }
