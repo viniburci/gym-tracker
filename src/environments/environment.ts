@@ -8,4 +8,10 @@ export const environment = {
   refreshTokenBuffer: 180000, // 3 minutes
   maxImageSize: 2 * 1024 * 1024, // 2MB in bytes
   allowedImageTypes: ['image/jpeg', 'image/png'],
+  image: {
+    maxWidth: 1920,
+    maxHeight: 1080,
+    minWidth: 200,
+    minHeight: 200,
+  }
 }; 

@@ -127,6 +127,20 @@ export class CreateExerciseComponent implements OnInit {
     return null;
   }
 
+  private validateImageDimensions(img: HTMLImageElement): string | null {
+    const { maxWidth, maxHeight, minWidth, minHeight } = environment.image;
+
+    if (img.width > maxWidth || img.height > maxHeight) {
+      return `Imagem muito grande. Dimensões máximas: ${maxWidth}x${maxHeight}px`;
+    }
+
+    if (img.width < minWidth || img.height < minHeight) {
+      return `Imagem muito pequena. Dimensões mínimas: ${minWidth}x${minHeight}px`;
+    }
+
+    return null;
+  }
+
   private handleFile(file: File) {
     this.errorMessage = null;
     const error = this.validateFile(file);
@@ -137,16 +151,39 @@ export class CreateExerciseComponent implements OnInit {
       return;
     }
 
-    this.selectedFile = file;
+    // Create an image element to check dimensions
+    const img = new Image();
     const reader = new FileReader();
+
     reader.onload = (e: any) => {
-      this.imageSrc = e.target.result;
+      img.onload = () => {
+        const dimensionError = this.validateImageDimensions(img);
+        if (dimensionError) {
+          this.errorMessage = dimensionError;
+          this.selectedFile = null;
+          this.imageSrc = null;
+          return;
+        }
+
+        this.selectedFile = file;
+        this.imageSrc = e.target.result;
+      };
+
+      img.onerror = () => {
+        this.errorMessage = 'Erro ao carregar a imagem. Verifique se o arquivo é uma imagem válida.';
+        this.selectedFile = null;
+        this.imageSrc = null;
+      };
+
+      img.src = e.target.result;
     };
+
     reader.onerror = () => {
       this.errorMessage = 'Erro ao ler o arquivo. Tente novamente.';
       this.selectedFile = null;
       this.imageSrc = null;
     };
+
     reader.readAsDataURL(file);
   }
 

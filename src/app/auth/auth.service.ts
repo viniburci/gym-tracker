@@ -13,7 +13,7 @@ export class AuthService {
   errorMessage = signal<string | null>(null);
   private http = inject(HttpClient);
 
-  private readonly url = environment.apiUrl;
+  private readonly url = environment.apiUrl + environment.api.auth;
 
   private logoutTimer: any;
   private refreshTimer: any;
@@ -72,7 +72,7 @@ export class AuthService {
         {
           headers: {
             Authorization: 'Bearer ' + refreshToken,
-          },
+          }
         }
       )
       .pipe(
@@ -91,64 +91,42 @@ export class AuthService {
       );
   }
 
-  logout(): void {
+  logout() {
     this.user.set(null);
     localStorage.removeItem('token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('expiration_date');
-    console.log('Usuário desconectado.');
-
-    if (this.logoutTimer) clearTimeout(this.logoutTimer);
-    if (this.refreshTimer) clearTimeout(this.refreshTimer);
-    this.isRefreshing = false;
-  }
-
-  private startRefreshTimer(expirationDate: Date): void {
-    if (this.refreshTimer) {
-      clearTimeout(this.refreshTimer);
-    }
-
-    const timeUntilRefresh = expirationDate.getTime() - new Date().getTime() - this.REFRESH_BUFFER_MS;
-    if (timeUntilRefresh <= 0) {
-      console.warn('O tempo para renovação já expirou no startRefreshTimer.');
-      this.logout();
-      return;
-    }
-
-    this.refreshTimer = setTimeout(() => {
-      this.refreshAccessToken().subscribe({
-        next: () => console.log('Token renovado automaticamente.'),
-        error: (err) => {
-          console.error('Erro ao renovar automaticamente:', err);
-          this.logout();
-        }
-      });
-    }, timeUntilRefresh);
-
-    console.log(`Renovação de token agendada para daqui a ${timeUntilRefresh / 1000} segundos (${this.REFRESH_BUFFER_MS / 1000} segundos antes da expiração).`);
-  }
-
-  private startLogoutTimer(expirationDate: Date): void {
+    localStorage.removeItem('user');
     if (this.logoutTimer) {
       clearTimeout(this.logoutTimer);
     }
-
-    const timeUntilLogout = expirationDate.getTime() - new Date().getTime();
-    this.logoutTimer = setTimeout(() => {
-      this.logout();
-    }, timeUntilLogout);
-
-    console.log(
-      `Logout agendado para daqui a ${timeUntilLogout / 1000} segundos.`
-    );
+    if (this.refreshTimer) {
+      clearTimeout(this.refreshTimer);
+    }
   }
 
-  private startTimers(expirationDate: Date): void {
-    if (this.logoutTimer) clearTimeout(this.logoutTimer);
-    if (this.refreshTimer) clearTimeout(this.refreshTimer);
+  autoLogin() {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      return;
+    }
 
-    this.startLogoutTimer(expirationDate);
-    this.startRefreshTimer(expirationDate);
+    const user: User = JSON.parse(userData);
+    const expirationDate = new Date(localStorage.getItem('expiration_date') || '');
+
+    if (expirationDate <= new Date()) {
+      console.log('Token expirado durante auto-login. Tentando renovar...');
+      this.refreshAccessToken().subscribe({
+        error: (error) => {
+          console.error('Erro ao renovar token durante auto-login:', error);
+          this.logout();
+        },
+      });
+      return;
+    }
+
+    this.user.set(user);
+    this.startTimers(expirationDate);
   }
 
   private handleAuthentication(resData: AuthResponse): void {
@@ -216,66 +194,38 @@ export class AuthService {
     }
   }
 
-  autoLogin(): void {
-    const token = localStorage.getItem('token');
-    const refreshToken = localStorage.getItem('refresh_token');
-    const expirationDateString = localStorage.getItem('expiration_date');
-    const userString = localStorage.getItem('user');
-    let storedUser = userString ? JSON.parse(userString) : null;
+  private startTimers(expirationDate: Date) {
+    this.clearTimers();
 
-    if (!token || !expirationDateString) {
-      console.log('Nenhum token ou data de expiração encontrado. Usuário não logado.');
-      return;
+    const expiresIn = expirationDate.getTime() - new Date().getTime();
+    console.log(`Token expira em ${expiresIn / 1000} segundos`);
+
+    // Set timer to refresh token before it expires
+    const refreshIn = expiresIn - this.REFRESH_BUFFER_MS;
+    if (refreshIn > 0) {
+      console.log(`Agendando renovação do token para ${refreshIn / 1000} segundos`);
+      this.refreshTimer = setTimeout(() => {
+        console.log('Iniciando renovação automática do token...');
+        this.refreshAccessToken().subscribe();
+      }, refreshIn);
     }
 
-    const expirationDate = new Date(expirationDateString);
-
-    if (expirationDate <= new Date()) {
-      console.warn('Token expirado. Usuário será desconectado.');
-      this.logout();
-      return;
-    }
-
-    // const userData = this.decodeToken(token);
-    // if (!userData) {
-    //   console.error('Erro ao decodificar o token. Realizando logout.');
-    //   this.logout();
-    //   return;
-    // }
-
-    const user = new User(
-      storedUser.id,
-      storedUser.firstname,
-      storedUser.lastname,
-      storedUser.email,
-      storedUser.role,
-      token,
-      refreshToken!,
-      expirationDate
-    );
-    console.log("user auto-login id: " + user.id)
-    console.log("user auto-login: " + user)
-
-    this.user.set(user);
-
-    console.log('Usuário autenticado automaticamente. Restaurando timers...');
-    this.startTimers(expirationDate);
-  }
-
-  decodeToken(token: string): any {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      console.log('Payload decodificado:', payload);
-      return payload;
-    } catch (error) {
-      console.error('Erro ao decodificar token:', error);
-      return null;
+    // Set timer for auto logout
+    if (expiresIn > 0) {
+      console.log(`Agendando logout automático para ${expiresIn / 1000} segundos`);
+      this.logoutTimer = setTimeout(() => {
+        console.log('Executando logout automático...');
+        this.logout();
+      }, expiresIn);
     }
   }
 
-  getUserId(): number | null {
-    const user = this.user();
-    console.log('user:', user);
-    return user ? user.id : null;
+  private clearTimers() {
+    if (this.logoutTimer) {
+      clearTimeout(this.logoutTimer);
+    }
+    if (this.refreshTimer) {
+      clearTimeout(this.refreshTimer);
+    }
   }
 }

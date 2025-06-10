@@ -2,6 +2,7 @@ import { Component, computed, inject, OnInit } from '@angular/core';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { ProfileDropdownComponent } from "./home/profile-dropdown/profile-dropdown.component";
 import { AuthService } from './auth/auth.service';
+import { CsrfService } from './core/services/csrf.service';
 
 @Component({
     selector: 'app-root',
@@ -9,12 +10,12 @@ import { AuthService } from './auth/auth.service';
     templateUrl: './app.component.html',
     styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit{
-
+export class AppComponent implements OnInit {
   title = 'gym-tracker';
 
   private router = inject(Router);
   private authService = inject(AuthService);
+  private csrfService = inject(CsrfService);
 
   private isLoggedIn() {
     return this.authService.user() !== null;
@@ -28,6 +29,6 @@ export class AppComponent implements OnInit{
 
   ngOnInit(): void {
     this.authService.autoLogin();
+    this.csrfService.initializeCsrfToken().subscribe();
   }
-
 }

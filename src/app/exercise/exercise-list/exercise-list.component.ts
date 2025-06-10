@@ -4,6 +4,7 @@ import { ExerciseItemComponent } from '../exercise-item/exercise-item.component'
 import { Router, RouterModule } from '@angular/router';
 import { ExerciseService } from '../create-exercise/exercise.service';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-exercise-list',
@@ -15,19 +16,13 @@ export class ExerciseListComponent implements OnInit {
   private router = inject(Router);
   private exerciseService = inject(ExerciseService);
   private cdr = inject(ChangeDetectorRef);
+  private sanitizer = inject(DomSanitizer);
 
   exercises: Exercise[] = [];
-  filteredExercises: Exercise[] = [...this.exercises];
-
-  searchTerm: string = '';
-  selectedType: string = '';
-  exerciseTypes: string[] = [
-    ...new Set(this.exercises.map((exercise) => exercise.type).filter((type): type is string => type !== undefined)),
-  ];
-
-  // exerciseTypes: string[] = [
-  //   ...new Set(this.exercises.map((exercise) => exercise.type)),
-  // ];
+  filteredExercises: Exercise[] = [];
+  exerciseTypes: string[] = [];
+  searchTerm = '';
+  selectedType = '';
 
   filterExercises(): void {
     this.filteredExercises = this.exercises.filter(
@@ -40,12 +35,25 @@ export class ExerciseListComponent implements OnInit {
 
   ngOnInit(): void {
     this.exerciseService.getExercises().subscribe((exercises: Exercise[]) => {
-      this.exercises = exercises.map((exercise: Exercise) => {
-        return {
-          ...exercise,
-          imageUrl: `http://localhost:8080/exercises/${exercise.id}/image`,
-        };
+      this.exercises = exercises;
+      
+      // Load images for each exercise
+      this.exercises.forEach(exercise => {
+        this.exerciseService.getExerciseImage(exercise.id).subscribe({
+          next: (blob) => {
+            const objectUrl = URL.createObjectURL(blob);
+            const safeUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+            exercise.imageUrl = safeUrl;
+            this.cdr.detectChanges();
+          },
+          error: (error) => {
+            console.error(`Error loading image for exercise ${exercise.id}:`, error);
+            exercise.imageUrl = 'assets/placeholder-image.png'; // Add a placeholder image
+            this.cdr.detectChanges();
+          }
+        });
       });
+
       this.exerciseTypes = [
         ...new Set(this.exercises.map((exercise) => exercise.type).filter((type): type is string => type !== undefined)),
       ];
