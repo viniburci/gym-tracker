@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CsrfService {
-  private csrfToken = new BehaviorSubject<string | null>(null);
+  private csrfToken = signal<string | null>(null);
   private readonly apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
@@ -17,7 +17,7 @@ export class CsrfService {
       tap((response: any) => {
         const token = this.extractTokenFromCookie();
         if (token) {
-          this.csrfToken.next(token);
+          this.csrfToken.set(token);
         }
       })
     );
@@ -33,7 +33,7 @@ export class CsrfService {
   }
 
   getToken(): string | null {
-    return this.csrfToken.value;
+    return this.csrfToken();
   }
 
   refreshToken(): void {
