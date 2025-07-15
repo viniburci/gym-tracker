@@ -22,6 +22,7 @@ export class WorkoutComponent implements OnInit {
       this.workoutService.getWorkoutById(+workoutId).subscribe((workout: Workout) => {
         this.workout.set(workout);
         if (workout.workoutExercises) {
+          //ordena os exercicios de forma crescente conforme o valor da position
           workout.workoutExercises.sort((a, b) => a.position - b.position);
         }
       });

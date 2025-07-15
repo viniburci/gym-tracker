@@ -62,12 +62,32 @@
   <div cdkDropList class="exercise-list" (cdkDropListDropped)="drop($event)">
     @for(exercise of selectedExercises; track exercise.exercise.id) {
       <div cdkDrag class="exercise-item">
-        <span cdkDragHandle>{{ getExerciseName(exercise.exercise.id) }} - {{ exercise.sets }}x{{ exercise.reps }}</span>
+        <span>{{ getExerciseName(exercise.exercise.id) }} - {{ exercise.sets }}x{{ exercise.reps }}</span>
 
-        <input type="number" [value]="exercise.sets" (change)="updateExerciseSets(exercise.exercise.id!, $event)" min="1" class="input-small">x
-        <input type="number" [value]="exercise.reps" (change)="updateExerciseReps(exercise.exercise.id!, $event)" min="1" class="input-small">
+        <input
+          class="input-small"
+          type="number"
+          [value]="exercise.sets"
+          (change)="updateExerciseSets(exercise.exercise.id!, $event)"
+          (mousedown)="$event.stopPropagation()"
+          min="1"
+        >x
+        <input
+          class="input-small"
+          type="number"
+          [value]="exercise.reps"
+          (change)="updateExerciseReps(exercise.exercise.id!, $event)"
+          (mousedown)="$event.stopPropagation()"
+          min="1"
+        >
 
-        <button type="button" (click)="removeExercise(exercise)" class="btn btn-remove">Deletar</button>
+        <button
+          class="btn btn-remove"
+          type="button"
+          (click)="removeExercise(exercise)"
+          (mousedown)="$event.stopPropagation()">
+          Deletar
+        </button>
       </div>
     }
   </div>
