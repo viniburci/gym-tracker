@@ -1,13 +1,23 @@
-<article>
-    @if (workout != null && workout != undefined) {
-      <h2>{{ workout()?.name }}</h2>
-      <ul>
-        @for(exercise of workout()?.workoutExercises; track $index) {
-          <li>
-            <strong>Exercício #{{ exercise.exercise.name }}</strong>
-            <p>{{ exercise.sets }} séries de {{ exercise.reps }} repetições</p>
-          </li>
-        }
-      </ul>
-    }
-</article>
+<section class="workout-card">
+  @if (workout != null && workout != undefined) {
+    <header class="workout-header">
+      <div class="workout-title-group">
+        <h2 class="workout-title">{{ workout()?.name }}</h2>
+        <p class="workout-meta">Total de exercícios: {{ workout()?.workoutExercises?.length }}</p>
+      </div>
+    </header>
+    <ul class="exercise-list">
+      @for(exercise of workout()?.workoutExercises; track $index) {
+        <li class="exercise-item">
+          <div class="exercise-info">
+            <span class="exercise-avatar">{{ exercise?.exercise?.name?.charAt(0) || '?' }}</span>
+            <div>
+              <strong class="exercise-name">{{ exercise.exercise.name }}</strong>
+              <p class="exercise-details">{{ exercise.sets }} séries de {{ exercise.reps }} repetições</p>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>
