@@ -21,6 +21,9 @@ export class WorkoutComponent implements OnInit {
     if (workoutId) {
       this.workoutService.getWorkoutById(+workoutId).subscribe((workout: Workout) => {
         this.workout.set(workout);
+        if (workout.workoutExercises) {
+          workout.workoutExercises.sort((a, b) => a.position - b.position);
+        }
       });
     }
   }
