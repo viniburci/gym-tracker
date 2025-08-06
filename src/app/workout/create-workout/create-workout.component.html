@@ -1,5 +1,5 @@
 <section class="container">
-  <h2 class="title">Criar Treino</h2>
+  <h2 class="title">{{ editing ? 'Editar Treino' : 'Criar Treino' }}</h2>
 
   <form [formGroup]="workoutForm" (ngSubmit)="submitWorkout()" class="form">
     <div class="input-group">
@@ -49,34 +49,40 @@
 
     <div class="button-group">
       <button type="button" (click)="addExercise()" class="btn btn-add">Adicionar Exercício</button>
-      <button type="submit" [disabled]="workoutForm.invalid || selectedExercises.length === 0" class="btn btn-save">Salvar Workout</button>
+      <button type="submit" [disabled]="!canSaveWorkout() || isLoading()" class="btn btn-save">
+        @if (isLoading()) {
+          Salvando...
+        } @else {
+          {{ editing ? 'Atualizar' : 'Salvar' }} Workout
+        }
+      </button>
     </div>
   </form>
 
   <h3>Exercícios Adicionados</h3>
-  @if(selectedExercises.length >= 2){
+  @if(selectedExercises().length >= 2){
     <p>
       <small class="info">*Você pode arrastar os exercicios para deixa-los em ordens diferentes*</small>
     </p>
   }
   <div cdkDropList class="exercise-list" (cdkDropListDropped)="drop($event)">
-    @for(exercise of selectedExercises; track exercise.exercise.id) {
+    @for(workoutExercise of selectedExercises(); track $index) {
       <div cdkDrag class="exercise-item">
-        <span>{{ getExerciseName(exercise.exercise.id) }} - {{ exercise.sets }}x{{ exercise.reps }}</span>
+        <span>{{ getExerciseName(workoutExercise.exercise.id) }} - {{ workoutExercise.sets }}x{{ workoutExercise.reps }}</span>
 
         <input
           class="input-small"
           type="number"
-          [value]="exercise.sets"
-          (change)="updateExerciseSets(exercise.exercise.id!, $event)"
+          [value]="workoutExercise.sets"
+          (change)="updateExerciseSets(workoutExercise.exercise.id!, workoutExercise.position, $event)"
           (mousedown)="$event.stopPropagation()"
           min="1"
         >x
         <input
           class="input-small"
           type="number"
-          [value]="exercise.reps"
-          (change)="updateExerciseReps(exercise.exercise.id!, $event)"
+          [value]="workoutExercise.reps"
+          (change)="updateExerciseReps(workoutExercise.exercise.id!, workoutExercise.position, $event)"
           (mousedown)="$event.stopPropagation()"
           min="1"
         >
@@ -84,7 +90,7 @@
         <button
           class="btn btn-remove"
           type="button"
-          (click)="removeExercise(exercise)"
+          (click)="removeExercise(workoutExercise)"
           (mousedown)="$event.stopPropagation()">
           Deletar
         </button>

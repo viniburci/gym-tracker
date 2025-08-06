@@ -1,10 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
 import { Workout, WorkoutExercise } from '../workout.model';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ExerciseService } from '../../exercise/create-exercise/exercise.service';
 import { Exercise } from '../../exercise/exercise.model';
 import { WorkoutService } from '../workout.service';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
@@ -15,13 +16,97 @@ import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-
 })
 export class CreateWorkoutComponent implements OnInit {
 
+  editing: boolean = false;
+  originalWorkout: Workout | null = null;
+  isLoading = signal(false);
+
   private workoutService = inject(WorkoutService);
   private exerciseService = inject(ExerciseService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   exercises: Exercise[] = [];
   filteredExercises: Exercise[] = this.exercises;
-  selectedExercises: WorkoutExercise[] = [];
+  selectedExercises = signal<WorkoutExercise[]>([]);
   exerciseTypes: string[] = []
+
+  selectedExercisesCount = computed(() => this.selectedExercises().length);
+  
+  hasExercises = computed(() => this.selectedExercises().length > 0);
+
+  canSaveWorkout = computed(() => {
+    const exercises = this.selectedExercises();
+    const hasValidName = this.workoutForm.get('name')?.valid;
+    
+    // No modo edição: pode salvar apenas se houver mudanças
+    if (this.editing && this.originalWorkout) {
+      const hasChanges = this.hasWorkoutChanges();
+      return hasValidName && exercises.length > 0 && hasChanges;
+    }
+    
+    return hasValidName && exercises.length > 0;
+  });
+
+  selectedExercisesArray = new FormArray<FormGroup>([]);
+
+  private mainEffect = effect(() => {
+    const exercises = this.selectedExercises();
+  });
+
+  private setsEffect = effect(() => {
+    const exercises = this.selectedExercises();
+  });
+
+  private repsEffect = effect(() => {
+    const exercises = this.selectedExercises();
+  });
+
+  // Effect para monitorar mudanças no formulário
+  private formEffect = effect(() => {
+    const nameValid = this.workoutForm.get('name')?.valid;
+    const exercises = this.selectedExercises();
+    const hasChanges = this.hasWorkoutChanges();
+    // Monitora mudanças no formulário
+  });
+
+  // Método para verificar se há mudanças no workout
+  private hasWorkoutChanges(): boolean {
+    if (!this.originalWorkout) {
+      return false;
+    }
+    
+    const currentName = this.workoutForm.get('name')?.value;
+    const currentExercises = this.selectedExercises();
+    
+    // Verificar se o nome mudou
+    if (currentName !== this.originalWorkout.name) {
+      return true;
+    }
+    
+    // Verificar se a quantidade de exercícios mudou
+    if (currentExercises.length !== this.originalWorkout.workoutExercises.length) {
+      return true;
+    }
+    
+    // Verificar se algum exercício mudou (sets, reps, posição)
+    for (let i = 0; i < currentExercises.length; i++) {
+      const current = currentExercises[i];
+      const original = this.originalWorkout.workoutExercises[i];
+      
+      if (!original) {
+        return true; // Novo exercício adicionado
+      }
+      
+      if (current.exercise.id !== original.exercise.id ||
+          current.sets !== original.sets ||
+          current.reps !== original.reps ||
+          current.position !== original.position) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
 
   workoutForm = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -34,6 +119,39 @@ export class CreateWorkoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadExercises();
+    
+    if(this.router.url.includes('edit')) {
+      this.editing = true;
+      const workoutId = this.route.snapshot.paramMap.get('workoutId');
+      if (workoutId) {
+        this.workoutService.getWorkoutById(+workoutId).subscribe((workout: Workout) => {
+          this.workoutForm.patchValue({
+            name: workout.name,
+          });
+          
+          // Ordenar exercícios por position antes de definir no signal
+          const sortedExercises = (workout.workoutExercises || []).sort((a, b) => a.position - b.position);
+          this.selectedExercises.set(sortedExercises);
+          
+          // Salvar o workout original para comparação
+          this.originalWorkout = {
+            ...workout,
+            workoutExercises: sortedExercises
+          };
+        });
+      }
+    }
+
+    this.selectedExercises().forEach((exercise) => {
+      const exerciseFormGroup = new FormGroup({
+        exerciseId: new FormControl(exercise.exercise.id, Validators.required),
+        sets: new FormControl(exercise.sets, [Validators.required, Validators.min(1)]),
+        reps: new FormControl(exercise.reps, [Validators.required, Validators.min(1)]),
+        position: new FormControl(exercise.position, [Validators.required, Validators.min(0)]),
+      });
+      this.selectedExercisesArray.push(exerciseFormGroup);
+    });
+    
     this.workoutForm.get('exerciseType')?.valueChanges.subscribe(value => {
       this.filterExercises();
     });
@@ -65,11 +183,10 @@ export class CreateWorkoutComponent implements OnInit {
 
   addExercise(): void {
     const exerciseId = this.workoutForm.get('exerciseId')?.value;
-    console.log("exerciseID: " + exerciseId)
     const sets = this.workoutForm.get('sets')?.value ?? 1;
     const reps = this.workoutForm.get('reps')?.value ?? 1;
 
-    const position = this.selectedExercises.length;
+    const position = this.selectedExercises().length;
 
     this.workoutForm.get('position')?.setValue(position);
     this.workoutForm.get('position')?.updateValueAndValidity();
@@ -77,65 +194,114 @@ export class CreateWorkoutComponent implements OnInit {
 
     if (!exerciseId) return;
 
-    console.log('Lista de Exercícios:', this.exercises);
-
     const selectedExercise = this.exercises.find(ex => ex.id === (+exerciseId));
-    console.log("selectedExercise: " + JSON.stringify(selectedExercise, null, 2));
     if (!selectedExercise) return;
 
-    this.selectedExercises = [
-      ...this.selectedExercises,
+    // Usando signal para atualizar a lista
+    this.selectedExercises.update(exercises => [
+      ...exercises,
       {
         exercise: {id: +exerciseId},
         sets: sets,
         reps: reps,
         position: position,
       }
-    ];
+    ]);
 
-    console.log(this.selectedExercises);
-    console.log("Status do Formulário:", this.workoutForm.valid);
-    console.log("Erros no Formulário:", this.workoutForm.errors);
-    console.log("Erros nos controles:", this.workoutForm.controls);
+    this.selectedExercisesArray.push(this.workoutForm as FormGroup);
   }
 
   removeExercise(we: WorkoutExercise) {
-    const index = this.selectedExercises.indexOf(we);
-    if (index > -1) {
-      this.selectedExercises.splice(index, 1);
-    }
+    this.selectedExercises.update(exercises => 
+      exercises.filter(exercise => exercise !== we)
+    );
   }
 
   submitWorkout(): void {
-    if (this.workoutForm.valid && this.selectedExercises.length > 0) {
+    // No modo edição, só precisamos verificar se há exercícios e se o nome é válido
+    const hasValidName = this.workoutForm.get('name')?.valid;
+    const hasExercises = this.selectedExercises().length > 0;
+    
+    if (hasValidName && hasExercises) {
+      this.isLoading.set(true);
+      
+      // Preparar os exercícios preservando IDs quando possível
+      const workoutExercises = this.selectedExercises().map((exercise, index) => {
+        // Se estamos editando e o exercício já existia na mesma posição, preservar o ID
+        if (this.editing && this.originalWorkout && this.originalWorkout.workoutExercises[index]) {
+          const originalExercise = this.originalWorkout.workoutExercises[index];
+          // Se é o mesmo exercício (mesmo ID), preservar o ID do WorkoutExercise
+          if (originalExercise.exercise.id === exercise.exercise.id) {
+            return {
+              ...exercise,
+              id: originalExercise.id
+            };
+          }
+        }
+        return exercise;
+      });
+
       const workout: Workout = {
         name: this.workoutForm.get('name')?.value ?? '',
-        workoutExercises: this.selectedExercises,
+        workoutExercises: workoutExercises,
       };
 
-      console.log(workout)
-
-      this.workoutService.createWorkout(workout).subscribe(() => {
-        console.log('Treino criado com sucesso!');
-        this.workoutForm.reset();
-        this.selectedExercises = [];
-      });
+      if (this.editing) {
+        // Modo edit - atualizar workout existente
+        const workoutId = this.route.snapshot.paramMap.get('workoutId');
+        if (workoutId) {
+          this.workoutService.updateWorkout(+workoutId, workout).subscribe({
+            next: () => {
+              console.log('Treino atualizado com sucesso!');
+              this.isLoading.set(false);
+              this.router.navigate(['/workouts']);
+            },
+            error: (error) => {
+              console.error('Erro ao atualizar treino:', error);
+              this.isLoading.set(false);
+            }
+          });
+        }
+      } else {
+        // Modo create - criar novo workout
+        this.workoutService.createWorkout(workout).subscribe({
+          next: () => {
+            console.log('Treino criado com sucesso!');
+            this.isLoading.set(false);
+            this.workoutForm.reset();
+            this.selectedExercises.set([]);
+          },
+          error: (error) => {
+            console.error('Erro ao criar treino:', error);
+            this.isLoading.set(false);
+          }
+        });
+      }
     } else {
-      console.warn('Preencha os dados corretamente!');
+      if (!hasValidName) {
+        console.warn('Nome do treino é obrigatório!');
+      }
+      if (!hasExercises) {
+        console.warn('Adicione pelo menos um exercício!');
+      }
     }
   }
 
   drop(event: CdkDragDrop<{title: string; poster: string}[]>) {
-    moveItemInArray(this.selectedExercises, event.previousIndex, event.currentIndex);
-
-    this.selectedExercises.forEach((exercise, index) => {
-      exercise.position = index;
+    // Usando signal para atualizar a lista após drag and drop
+    this.selectedExercises.update(exercises => {
+      const newExercises = [...exercises];
+      moveItemInArray(newExercises, event.previousIndex, event.currentIndex);
+      
+      // Atualizar posições e retornar nova array com posições corretas
+      return newExercises.map((exercise, index) => ({
+        ...exercise,
+        position: index
+      }));
     });
-
-    console.log("Lista de Exercícios:", this.selectedExercises);
   }
 
-  updateExerciseReps(id: number, event: Event) {
+  updateExerciseReps(id: number, position: number, event: Event) {
     const input = event.target as HTMLInputElement;
     const newValue = Number(input.value);
 
@@ -144,16 +310,17 @@ export class CreateWorkoutComponent implements OnInit {
       return;
     }
 
-    this.selectedExercises = [...this.selectedExercises.map(workoutExercise =>
-      workoutExercise.exercise.id === id
-        ? { ...workoutExercise, reps: newValue }
-        : workoutExercise
-    )];
-
-    console.log("reps atualizados:", this.selectedExercises);
+    // Usando signal para atualizar reps
+    this.selectedExercises.update(workoutExercises =>
+      workoutExercises.map(workoutExercise =>
+        workoutExercise.exercise.id === id && workoutExercise.position === position
+          ? { ...workoutExercise, reps: newValue }
+          : workoutExercise
+      )
+    );
   }
 
-  updateExerciseSets(id: number, event: Event) {
+  updateExerciseSets(id: number, position: number, event: Event) {
     const input = event.target as HTMLInputElement;
     const newValue = Number(input.value);
 
@@ -162,11 +329,14 @@ export class CreateWorkoutComponent implements OnInit {
       return;
     }
 
-    this.selectedExercises = [...this.selectedExercises.map(workoutExercise =>
-      workoutExercise.exercise.id === id
-        ? { ...workoutExercise, sets: newValue }
-        : workoutExercise
-    )];
-    console.log("sets atualizados:", this.selectedExercises);
+    // Usando signal para atualizar sets
+    this.selectedExercises.update(workoutExercises =>
+      workoutExercises.map(workoutExercise =>
+        workoutExercise.exercise.id === id && workoutExercise.position === position
+          ? { ...workoutExercise, sets: newValue }
+          : workoutExercise
+      )
+    );
   }
+
 }
