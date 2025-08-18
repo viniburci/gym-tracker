@@ -31,72 +31,49 @@ export class CreateWorkoutComponent implements OnInit {
   exerciseTypes: string[] = []
 
   selectedExercisesCount = computed(() => this.selectedExercises().length);
-  
+
   hasExercises = computed(() => this.selectedExercises().length > 0);
 
   canSaveWorkout = computed(() => {
     const exercises = this.selectedExercises();
     const hasValidName = this.workoutForm.get('name')?.valid;
-    
+
     // No modo edição: pode salvar apenas se houver mudanças
     if (this.editing && this.originalWorkout) {
       const hasChanges = this.hasWorkoutChanges();
       return hasValidName && exercises.length > 0 && hasChanges;
     }
-    
+
     return hasValidName && exercises.length > 0;
   });
 
-  selectedExercisesArray = new FormArray<FormGroup>([]);
-
-  private mainEffect = effect(() => {
-    const exercises = this.selectedExercises();
-  });
-
-  private setsEffect = effect(() => {
-    const exercises = this.selectedExercises();
-  });
-
-  private repsEffect = effect(() => {
-    const exercises = this.selectedExercises();
-  });
-
-  // Effect para monitorar mudanças no formulário
-  private formEffect = effect(() => {
-    const nameValid = this.workoutForm.get('name')?.valid;
-    const exercises = this.selectedExercises();
-    const hasChanges = this.hasWorkoutChanges();
-    // Monitora mudanças no formulário
-  });
-
-  // Método para verificar se há mudanças no workout
   private hasWorkoutChanges(): boolean {
     if (!this.originalWorkout) {
       return false;
     }
-    
+
     const currentName = this.workoutForm.get('name')?.value;
     const currentExercises = this.selectedExercises();
-    
+
     // Verificar se o nome mudou
     if (currentName !== this.originalWorkout.name) {
       return true;
     }
-    
+
     // Verificar se a quantidade de exercícios mudou
     if (currentExercises.length !== this.originalWorkout.workoutExercises.length) {
       return true;
     }
-    
+
     // Verificar se algum exercício mudou (sets, reps, posição)
     for (let i = 0; i < currentExercises.length; i++) {
       const current = currentExercises[i];
       const original = this.originalWorkout.workoutExercises[i];
-      
+
       if (!original) {
         return true; // Novo exercício adicionado
       }
-      
+
       if (current.exercise.id !== original.exercise.id ||
           current.sets !== original.sets ||
           current.reps !== original.reps ||
@@ -104,7 +81,7 @@ export class CreateWorkoutComponent implements OnInit {
         return true;
       }
     }
-    
+
     return false;
   }
 
@@ -119,7 +96,7 @@ export class CreateWorkoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadExercises();
-    
+
     if(this.router.url.includes('edit')) {
       this.editing = true;
       const workoutId = this.route.snapshot.paramMap.get('workoutId');
@@ -128,11 +105,11 @@ export class CreateWorkoutComponent implements OnInit {
           this.workoutForm.patchValue({
             name: workout.name,
           });
-          
+
           // Ordenar exercícios por position antes de definir no signal
           const sortedExercises = (workout.workoutExercises || []).sort((a, b) => a.position - b.position);
           this.selectedExercises.set(sortedExercises);
-          
+
           // Salvar o workout original para comparação
           this.originalWorkout = {
             ...workout,
@@ -142,16 +119,7 @@ export class CreateWorkoutComponent implements OnInit {
       }
     }
 
-    this.selectedExercises().forEach((exercise) => {
-      const exerciseFormGroup = new FormGroup({
-        exerciseId: new FormControl(exercise.exercise.id, Validators.required),
-        sets: new FormControl(exercise.sets, [Validators.required, Validators.min(1)]),
-        reps: new FormControl(exercise.reps, [Validators.required, Validators.min(1)]),
-        position: new FormControl(exercise.position, [Validators.required, Validators.min(0)]),
-      });
-      this.selectedExercisesArray.push(exerciseFormGroup);
-    });
-    
+    // Monitorar mudanças no tipo de exercício selecionado
     this.workoutForm.get('exerciseType')?.valueChanges.subscribe(value => {
       this.filterExercises();
     });
@@ -207,12 +175,10 @@ export class CreateWorkoutComponent implements OnInit {
         position: position,
       }
     ]);
-
-    this.selectedExercisesArray.push(this.workoutForm as FormGroup);
   }
 
   removeExercise(we: WorkoutExercise) {
-    this.selectedExercises.update(exercises => 
+    this.selectedExercises.update(exercises =>
       exercises.filter(exercise => exercise !== we)
     );
   }
@@ -221,10 +187,10 @@ export class CreateWorkoutComponent implements OnInit {
     // No modo edição, só precisamos verificar se há exercícios e se o nome é válido
     const hasValidName = this.workoutForm.get('name')?.valid;
     const hasExercises = this.selectedExercises().length > 0;
-    
+
     if (hasValidName && hasExercises) {
       this.isLoading.set(true);
-      
+
       // Preparar os exercícios preservando IDs quando possível
       const workoutExercises = this.selectedExercises().map((exercise, index) => {
         // Se estamos editando e o exercício já existia na mesma posição, preservar o ID
@@ -292,7 +258,7 @@ export class CreateWorkoutComponent implements OnInit {
     this.selectedExercises.update(exercises => {
       const newExercises = [...exercises];
       moveItemInArray(newExercises, event.previousIndex, event.currentIndex);
-      
+
       // Atualizar posições e retornar nova array com posições corretas
       return newExercises.map((exercise, index) => ({
         ...exercise,
