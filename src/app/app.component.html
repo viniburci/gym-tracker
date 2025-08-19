@@ -9,9 +9,9 @@
     </ul>
     @if(shouldShowNavbar()) {
       <ul>
-        <li><a [routerLink]="['workouts']">Treinos</a></li>
+        <li><a [routerLink]="['workouts']" routerLinkActive="selected">Treinos</a></li>
         <li><a [routerLink]="['workouts/new']">Adicionar Treino</a></li>
-        <li><a [routerLink]="['exercises']">Exercícios</a></li>
+        <li><a [routerLink]="['exercises']" routerLinkActive="selected">Exercícios</a></li>
         <li><app-profile-dropdown></app-profile-dropdown></li>
       </ul>
     }
