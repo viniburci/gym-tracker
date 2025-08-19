@@ -3,7 +3,17 @@
     <header class="workout-header">
       <div class="workout-title-group">
         <h2 class="workout-title">{{ workout()?.name }}</h2>
-        <p class="workout-meta">Total de exercícios: {{ workout()?.workoutExercises?.length }}</p>
+        <div class="workout-meta-and-buttons">
+          <p class="workout-meta">Total de exercícios: {{ workout()?.workoutExercises?.length }}</p>
+          <div class="button-group">
+            <button class="edit-button" [routerLink]="['/workouts', workout()?.id, 'edit']">
+              <i class="icon-edit"></i> Editar
+            </button>
+            <button class="delete-button" (click)="deleteWorkout(workout()?.id)">
+              <i class="icon-delete"></i> Excluir
+            </button>
+          </div>
+        </div>
       </div>
     </header>
     <ul class="exercise-list">
