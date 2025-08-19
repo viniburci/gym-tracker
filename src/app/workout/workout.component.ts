@@ -34,8 +34,23 @@ export class WorkoutComponent implements OnInit {
     const confirmed = window.confirm('Tem certeza que deseja excluir este treino?');
 
     if (confirmed && workoutId) {
-      this.workoutService.deleteWorkout(workoutId).subscribe(() => {
-        this.router.navigate(['/workouts']);
+      this.workoutService.deleteWorkout(workoutId).subscribe({
+        next: () => {
+          this.router.navigate(['/workouts']);
+        },
+        error: (error) => {
+          if (error.status === 403) {
+            alert('Você não tem permissão para excluir este treino.');
+          } else if (error.status === 404) {
+            alert('Treino não encontrado. Ele pode já ter sido excluído.');
+          } else if (error.status === 500) {
+            alert('Erro interno no servidor. Tente novamente mais tarde.');
+          } else {
+            alert('Ocorreu um erro inesperado. Verifique sua conexão ou tente novamente.');
+          }
+
+          console.error('Erro ao excluir treino:', error);
+        }
       });
     }
   }
