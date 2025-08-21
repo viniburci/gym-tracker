@@ -5,9 +5,11 @@
     <p>Tipo: {{ exercise()!.type }}</p>
 
     <footer>
-      <button (click)="onView()" class="contrast">Ver</button>
-      <button (click)="onEdit()">Editar</button>
-      <button (click)="onDelete()" class="secondary">Deletar</button>
+      <button class="secondary" (click)="onView()">Ver</button>
+      <div class="row">
+        <button class="edit-button" (click)="onEdit()">Editar</button>
+        <button class="delete-button" (click)="onDelete()" >Deletar</button>
+      </div>
     </footer>
   </article>
 </li>
