@@ -1,16 +1,17 @@
 import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
 import { Workout, WorkoutExercise } from '../workout.model';
-import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ExerciseService } from '../../exercise/create-exercise/exercise.service';
 import { Exercise } from '../../exercise/exercise.model';
 import { WorkoutService } from '../workout.service';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CapitalizePipe } from "../../core/pipes/capitalize.pipe";
 
 
 @Component({
     selector: 'app-create-workout',
-    imports: [ReactiveFormsModule, FormsModule, DragDropModule],
+    imports: [ReactiveFormsModule, FormsModule, DragDropModule, CapitalizePipe],
     templateUrl: './create-workout.component.html',
     styleUrl: './create-workout.component.css'
 })

@@ -15,7 +15,7 @@
     <select [(ngModel)]="selectedType" (change)="filterExercises()">
       <option value="">Todos</option>
       @for (type of exerciseTypes; track $index) {
-        <option [value]="type">{{ type }}</option>
+        <option [value]="type">{{ type | capitalize }}</option>
       }
     </select>
 

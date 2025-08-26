@@ -5,10 +5,11 @@ import { Router, RouterModule } from '@angular/router';
 import { ExerciseService } from '../create-exercise/exercise.service';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { CapitalizePipe } from "../../core/pipes/capitalize.pipe";
 
 @Component({
     selector: 'app-exercise-list',
-    imports: [ExerciseItemComponent, RouterModule, FormsModule],
+    imports: [ExerciseItemComponent, RouterModule, FormsModule, CapitalizePipe],
     templateUrl: './exercise-list.component.html',
     styleUrl: './exercise-list.component.css'
 })
@@ -36,7 +37,7 @@ export class ExerciseListComponent implements OnInit {
   ngOnInit(): void {
     this.exerciseService.getExercises().subscribe((exercises: Exercise[]) => {
       this.exercises = exercises;
-      
+
       // Load images for each exercise
       this.exercises.forEach(exercise => {
         this.exerciseService.getExerciseImage(exercise.id).subscribe({
