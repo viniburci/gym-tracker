@@ -8,6 +8,7 @@ import { ExerciseComponent } from './exercise/exercise.component';
 import { CreateWorkoutComponent } from './workout/create-workout/create-workout.component';
 import { WorkoutListComponent } from './workout/workout-list/workout-list.component';
 import { WorkoutComponent } from './workout/workout.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
 
 export const routes: Routes = [
   {
@@ -21,6 +22,10 @@ export const routes: Routes = [
   {
     path: 'signup',
     component: SignupComponent
+  },
+  {
+    path: 'profile',
+    component: UserProfileComponent
   },
   {
     path: 'exercises',

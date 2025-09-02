@@ -1,13 +1,12 @@
 <li>
-  <details class="dropdown">
+  <details class="dropdown" #dropdown>
     <summary>
-      Account
+      Opções
     </summary>
-    <ul dir="rtl">
-      <li><a href="#">Profile</a></li>
-      <li><a href="#">Settings</a></li>
-      <li><a href="#">Security</a></li>
-      <li><a (click)="logout()">Logout</a></li>
+    <ul>
+      <li><a [routerLink]="'/profile'" (click)="closeDropdown(dropdown)">Perfil</a></li>
+      <li><a (click)="closeDropdown(dropdown)">Configurações</a></li>
+      <li><a (click)="logout(); closeDropdown(dropdown)">Sair</a></li>
     </ul>
   </details>
 </li>
