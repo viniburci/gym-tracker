@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
+import { User } from '../auth/user.model';
 
 @Component({
   selector: 'app-user-profile',
@@ -7,6 +8,14 @@ import { Component } from '@angular/core';
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css'
 })
-export class UserProfileComponent {
+export class UserProfileComponent implements OnInit {
+
+  user = signal<User | null>(null);
+
+  ngOnInit() {
+    this.user.set(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null)
+  }
+
+
 
 }

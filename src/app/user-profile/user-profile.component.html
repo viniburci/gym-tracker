@@ -1,1 +1,15 @@
-<p>user-profile works!</p>
+<div class="user-profile">
+  <h2>Perfil do Usuário</h2>
+
+  <div class="profile-card">
+    <div class="profile-info">
+      <h3>{{ user()?.firstname }} {{ user()?.lastname }}</h3>
+      <p><strong>Email:</strong> {{ user()?.email }}</p>
+      <p><strong>Função:</strong> {{ user()?.role }}</p>
+    </div>
+
+    <div>
+      <button class="edit-button">Editar Perfil</button>
+    </div>
+  </div>
+</div>
