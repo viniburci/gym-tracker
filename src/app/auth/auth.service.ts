@@ -1,9 +1,10 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { User } from './user.model';
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import { AuthResponse } from './authResponse.model';
 import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,7 @@ export class AuthService {
   user = signal<User | null>(null);
   errorMessage = signal<string | null>(null);
   private http = inject(HttpClient);
+  private router = inject(Router);
 
   private readonly url = environment.apiUrl + environment.api.auth;
 
@@ -103,12 +105,13 @@ export class AuthService {
     if (this.refreshTimer) {
       clearTimeout(this.refreshTimer);
     }
+    this.router.navigate(['/']);
   }
 
-  autoLogin() {
+  autoLogin(): Observable<void> {
     const userData = localStorage.getItem('user');
     if (!userData) {
-      return;
+      return of(void 0);
     }
 
     const user: User = JSON.parse(userData);
@@ -116,18 +119,25 @@ export class AuthService {
 
     if (expirationDate <= new Date()) {
       console.log('Token expirado durante auto-login. Tentando renovar...');
-      this.refreshAccessToken().subscribe({
-        error: (error) => {
-          console.error('Erro ao renovar token durante auto-login:', error);
+
+      return this.refreshAccessToken().pipe(
+        map(() => {
+          this.user.set(user);
+          this.startTimers(expirationDate);
+        }),
+        catchError((err) => {
+          console.error('Erro ao renovar token durante auto-login:', err);
           this.logout();
-        },
-      });
-      return;
+          return of(void 0);
+        })
+      );
     }
 
     this.user.set(user);
     this.startTimers(expirationDate);
+    return of(void 0); // ainda retorna Observable<void>
   }
+
 
   private handleAuthentication(resData: AuthResponse): void {
     const expirationDate = new Date(resData.expiration_date);

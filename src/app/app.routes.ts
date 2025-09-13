@@ -9,6 +9,7 @@ import { CreateWorkoutComponent } from './workout/create-workout/create-workout.
 import { WorkoutListComponent } from './workout/workout-list/workout-list.component';
 import { WorkoutComponent } from './workout/workout.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { isUserLoggedInGuard } from './core/guards/guard/isUserLoggedIn.guard';
 
 export const routes: Routes = [
   {
@@ -25,7 +26,8 @@ export const routes: Routes = [
   },
   {
     path: 'profile',
-    component: UserProfileComponent
+    component: UserProfileComponent,
+    canActivate: [isUserLoggedInGuard]
   },
   {
     path: 'exercises',
@@ -35,7 +37,8 @@ export const routes: Routes = [
       { path: ':exerciseId/view', component: ExerciseComponent },
       { path: ':exerciseId/edit', component: CreateExerciseComponent },
       { path: 'new', component: CreateExerciseComponent }
-    ]
+    ],
+    canActivate: [isUserLoggedInGuard]
   },
   {
     path: 'workouts',
@@ -45,6 +48,7 @@ export const routes: Routes = [
       { path: 'new', component: CreateWorkoutComponent},
       { path: ':workoutId/view', component: WorkoutComponent},
       { path: ':workoutId/edit', component: CreateWorkoutComponent}
-    ]
+    ],
+    canActivate: [isUserLoggedInGuard]
   }
 ];
